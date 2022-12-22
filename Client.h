@@ -1,0 +1,8 @@
+//
+// Created by Kristian on 22. 12. 2022.
+//
+
+#ifndef SEMESTRALNAPRACAPOS_CLIENT_H
+#define SEMESTRALNAPRACAPOS_CLIENT_H
+
+#endif //SEMESTRALNAPRACAPOS_CLIENT_H

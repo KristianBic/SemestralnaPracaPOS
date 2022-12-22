@@ -8,38 +8,38 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/tmp/tmp.9ORpjrC3u6/cmake-build-debug"/>
+				<Option working_dir="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/tmp/tmp.9ORpjrC3u6/cmake-build-debug"/>
+				<Option working_dir="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/tmp/tmp.9ORpjrC3u6/cmake-build-debug"/>
+				<Option working_dir="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="SemestralnaPracaPOS">
-				<Option output="/tmp/tmp.9ORpjrC3u6/cmake-build-debug/SemestralnaPracaPOS" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/tmp/tmp.9ORpjrC3u6/cmake-build-debug"/>
+				<Option output="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/SemestralnaPracaPOS" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -50,15 +50,15 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 SemestralnaPracaPOS"/>
-					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 SemestralnaPracaPOS"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="SemestralnaPracaPOS/fast">
-				<Option output="/tmp/tmp.9ORpjrC3u6/cmake-build-debug/SemestralnaPracaPOS" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/tmp/tmp.9ORpjrC3u6/cmake-build-debug"/>
+				<Option output="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/SemestralnaPracaPOS" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -69,17 +69,26 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 SemestralnaPracaPOS/fast"/>
-					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/gmake -j4 -f &quot;/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 SemestralnaPracaPOS/fast"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/tmp/tmp.9ORpjrC3u6/main.c">
+		<Unit filename="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/Client.c">
 			<Option target="SemestralnaPracaPOS"/>
 		</Unit>
-		<Unit filename="/tmp/tmp.9ORpjrC3u6/CMakeLists.txt">
+		<Unit filename="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/Client.h">
+			<Option target="SemestralnaPracaPOS"/>
+		</Unit>
+		<Unit filename="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/Server.c">
+			<Option target="SemestralnaPracaPOS"/>
+		</Unit>
+		<Unit filename="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/Server.h">
+			<Option target="SemestralnaPracaPOS"/>
+		</Unit>
+		<Unit filename="/home/bicanovsky1/tmp/tmp.9ORpjrC3u6/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>
