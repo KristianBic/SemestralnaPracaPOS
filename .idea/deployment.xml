@@ -2,6 +2,16 @@
 <project version="4">
   <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
+      <paths name="Posko_2022 (90566bbe-c29b-459d-a8df-873b3d6f1c6a)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/tmp.vsWNUjhacs" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
       <paths name="pos_2022 (fd012260-a375-4d7c-b582-00cb91bc89bb)">
         <serverdata>
           <mappings>

@@ -67,10 +67,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/bicanovsky1/tmp/tmp.9ORpjrC3u6
+CMAKE_SOURCE_DIR = /tmp/tmp.vsWNUjhacs
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug
+CMAKE_BINARY_DIR = /tmp/tmp.vsWNUjhacs/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -99,9 +99,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/CMakeFiles /home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /tmp/tmp.vsWNUjhacs/cmake-build-debug/CMakeFiles /tmp/tmp.vsWNUjhacs/cmake-build-debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/bicanovsky1/tmp/tmp.9ORpjrC3u6/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /tmp/tmp.vsWNUjhacs/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -169,33 +169,6 @@ Client.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/Client.c.s
 .PHONY : Client.c.s
 
-Server.o: Server.c.o
-
-.PHONY : Server.o
-
-# target to build an object file
-Server.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/Server.c.o
-.PHONY : Server.c.o
-
-Server.i: Server.c.i
-
-.PHONY : Server.i
-
-# target to preprocess a source file
-Server.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/Server.c.i
-.PHONY : Server.c.i
-
-Server.s: Server.c.s
-
-.PHONY : Server.s
-
-# target to generate assembly for a file
-Server.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/Server.c.s
-.PHONY : Server.c.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -208,9 +181,6 @@ help:
 	@echo "... Client.o"
 	@echo "... Client.i"
 	@echo "... Client.s"
-	@echo "... Server.o"
-	@echo "... Server.i"
-	@echo "... Server.s"
 .PHONY : help
 
 

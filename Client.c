@@ -3,49 +3,75 @@
 //
 
 #include "Client.h"
-#include <arpa/inet.h>
 #include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#define PORT 8080
+#include <curl/curl.h>
 
-int main(int argc, char const* argv[])
+/* <DESC>
+ * Get a single file from an FTP server.
+ * </DESC>
+ */
+
+struct FtpFile
 {
-    int sock = 0, valread, client_fd;
-    struct sockaddr_in serv_addr;
-    char* hello = "Hello from client";
-    char buffer[1024] = { 0 };
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        printf("\n Socket creation error \n");
-        return -1;
+    const char *filename;
+    FILE *stream;
+};
+
+static size_t my_fwrite(void *buffer, size_t size, size_t nmemb, void *stream)
+{
+    struct FtpFile *out = (struct FtpFile *)stream;
+    if (!out->stream)
+    {
+        /* open file for writing */
+        out->stream = fopen(out->filename, "wb");
+        if (!out->stream)
+            return -1; /* failure, cannot open file to write */
+    }
+    return fwrite(buffer, size, nmemb, out->stream);
+}
+
+int main(void)
+{
+    CURL *curl;
+    CURLcode res;
+    struct FtpFile ftpfile = {
+            "curlF.tar.gz", /* name to store the file as if successful */
+            NULL};
+
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
+    curl = curl_easy_init();
+    if (curl)
+    {
+        /*
+         * You better replace the URL with one that works!
+         */
+        curl_easy_setopt(curl, CURLOPT_URL,
+                         "http://xcal1.vodafone.co.uk/5MB.zip");
+        /* Define our callback to get called when there's data to be written */
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, my_fwrite);
+        /* Set a pointer to our struct to pass to the callback */
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ftpfile);
+
+        /* Switch on full protocol/debug output */
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+        res = curl_easy_perform(curl);
+
+        /* always cleanup */
+        curl_easy_cleanup(curl);
+
+        if (CURLE_OK != res)
+        {
+            /* we failed */
+            fprintf(stderr, "curl told us %d\n", res);
+        }
     }
 
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
+    if (ftpfile.stream)
+        fclose(ftpfile.stream); /* close the local file */
 
-    // Convert IPv4 and IPv6 addresses from text to binary
-    // form
-    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)
-        <= 0) {
-        printf(
-                "\nInvalid address/ Address not supported \n");
-        return -1;
-    }
+    curl_global_cleanup();
 
-    if ((client_fd
-                 = connect(sock, (struct sockaddr*)&serv_addr,
-                           sizeof(serv_addr)))
-        < 0) {
-        printf("\nConnection Failed \n");
-        return -1;
-    }
-    send(sock, hello, strlen(hello), 0);
-    printf("Hello message sent\n");
-    valread = read(sock, buffer, 1024);
-    printf("%s\n", buffer);
-
-    // closing the connected socket
-    close(client_fd);
     return 0;
 }
