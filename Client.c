@@ -1,32 +1,27 @@
-//
-// Created by Kristian on 22. 12. 2022.
-//
-
 #include "Client.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <curl/curl.h>
-
-
-#include <sys/types.h>        /*  socket types              */
-#include <sys/socket.h>       /*  socket definitions        */
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>        /*  inet (3) functions         */
-#include <unistd.h>           /*  misc. Unix functions      */
-
-
+#include <arpa/inet.h>
+#include <unistd.h>
 #include <errno.h>
 
-/* The IP address and port number to connect to */
-
-//#define IPADDR "127.0.0.1"
-#define IPADDR "212.183.159.230"
-#define PORTNUM 80
+/* The DEFAULT IP address and port number to connect to */
+#define DEFAULT_IPADDR "212.183.159.230"
+//#define DEFAULT_IPADDR "frios2.fri.uniza.sk"
+#define DEFAULT_PORTNUM 80
 
 #ifndef INADDR_NONE
 #define INADDR_NONE 0xffffffff
 #endif
+
+char *address; //will be displayed after every command
+int port;
+curl_socket_t sockfd;
 
 struct FtpFile {
     const char *filename;
@@ -82,54 +77,22 @@ static int sockopt_callback(void *clientp, curl_socket_t curlfd,
     return CURL_SOCKOPT_ALREADY_CONNECTED;
 }
 
-int main(void)
-{
+void download(curl_socket_t sockfd) {
     CURL *curl;
     CURLcode res;
-    struct sockaddr_in servaddr;  /*  socket address structure  */
-    curl_socket_t sockfd;
-
     struct FtpFile ftpfile = {
-            "curlTextak.txt", /* name to store the file as if successful */
-            NULL};
+            "prvy.c", /* name to store the file as if successful */
+            NULL
+    };
 
     curl = curl_easy_init();
     if(curl) {
-        /*
-         * Note that libcurl will internally think that you connect to the host
-         * and port that you specify in the URL option.
-         */
-        //curl_easy_setopt(curl, CURLOPT_URL, "http://99.99.99.99:9999");
-        curl_easy_setopt(curl, CURLOPT_URL, "212.183.159.230/100MB.zip");
-
-        /* Create the socket "manually" */
-        sockfd = socket(AF_INET, SOCK_STREAM, 0);
-        if(sockfd == CURL_SOCKET_BAD) {
-            printf("Error creating listening socket.\n");
-            return 3;
-        }
-
-        memset(&servaddr, 0, sizeof(servaddr));
-        servaddr.sin_family = AF_INET;
-        servaddr.sin_port   = htons(PORTNUM);
-
-        servaddr.sin_addr.s_addr = inet_addr(IPADDR);
-        if(INADDR_NONE == servaddr.sin_addr.s_addr) {
-            close(sockfd);
-            return 2;
-        }
-
-        if(connect(sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) ==
-           -1) {
-            close(sockfd);
-            printf("client error: connect: %s\n", strerror(errno));
-            return 1;
-        }
+        curl_easy_setopt(curl, CURLOPT_URL, "http://99.99.99.99:9999");
+        //curl_easy_setopt(curl, CURLOPT_USERPWD, "meno:heslo");
 
         /* no progress meter please */
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
 
-        /* send all data to this function  */
         //curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
 
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, my_fwrite);
@@ -156,13 +119,71 @@ int main(void)
 
         if(res) {
             printf("libcurl error: %d\n", res);
-            return 4;
+            exit(4);
+        } else {
+            printf("Stahovanie prebehlo uspesne...\n\n\n");
         }
     }
     if (ftpfile.stream) {
         fclose(ftpfile.stream); /* close the local file */
     }
     curl_global_cleanup();
+}
+
+int serverConnection() {
+    curl_socket_t sockfd;
+    struct sockaddr_in server;
+
+    sockfd = socket(AF_INET, SOCK_STREAM, 0); //vytvorenie soketu
+    if(sockfd == CURL_SOCKET_BAD) { //sockfd == -1
+        perror("Error pri vytvarani socketu\n");
+        close(sockfd);
+        exit(3);
+    }
+
+    memset(&server, 0, sizeof(server));
+
+    server.sin_family = AF_INET;
+    server.sin_port = htons(port);
+    server.sin_addr.s_addr = inet_addr(address); // musi tam byt zrejme IP-cka
+
+    if(INADDR_NONE == server.sin_addr.s_addr) {
+        close(sockfd);
+        exit(2);
+    }
+
+    printf("Pripajanie ku %s...\n\n", address);
+    if(connect(sockfd, (struct sockaddr *) &server, sizeof(server)) == -1) {
+        close(sockfd);
+        printf("client error: connect: %s\n", strerror(errno));
+        exit(1);
+    }
+    printf("Pripojenie prebehlo uspesne...\n\n\n");
+
+    return sockfd;
+}
+
+
+int main(int argc, char *argv[])
+{
+    printf("-----------------------------------------\n");
+    printf("***** Vytajte v Download Manazerovi *****\n");
+    printf("-----------------------------------------\n");
+
+    if(argc < 3) {
+        fprintf(stderr, "Nedostatocny pocet argumentov! Program zada nasledujuce udaje: \n");
+        printf("Hostname: %s\n", DEFAULT_IPADDR);
+        printf("PortNumber: %d\n", DEFAULT_PORTNUM);
+        address = DEFAULT_IPADDR;
+        port = DEFAULT_PORTNUM;
+    } else {
+        address = argv[1];
+        port = atoi(argv[2]);
+    }
+    printf("\n");
+
+    sockfd = serverConnection();
+    download(sockfd);
 
     return 0;
 }
