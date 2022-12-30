@@ -82,6 +82,21 @@
 		<Unit filename="/tmp/tmp.vsWNUjhacs/Client.h">
 			<Option target="SemestralnaPracaPOS"/>
 		</Unit>
+		<Unit filename="/tmp/tmp.vsWNUjhacs/config.h">
+			<Option target="SemestralnaPracaPOS"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.vsWNUjhacs/conn.c">
+			<Option target="SemestralnaPracaPOS"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.vsWNUjhacs/conn.h">
+			<Option target="SemestralnaPracaPOS"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.vsWNUjhacs/functions.c">
+			<Option target="SemestralnaPracaPOS"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.vsWNUjhacs/functions.h">
+			<Option target="SemestralnaPracaPOS"/>
+		</Unit>
 		<Unit filename="/tmp/tmp.vsWNUjhacs/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

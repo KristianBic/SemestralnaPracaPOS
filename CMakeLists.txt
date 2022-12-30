@@ -3,6 +3,6 @@ project(SemestralnaPracaPOS C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(SemestralnaPracaPOS Client.c Client.h)
+add_executable(SemestralnaPracaPOS Client.c Client.h config.h functions.c functions.h conn.c conn.h)
 
 target_link_libraries(SemestralnaPracaPOS pthread m -lcurl)

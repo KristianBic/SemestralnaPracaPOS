@@ -169,6 +169,60 @@ Client.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/Client.c.s
 .PHONY : Client.c.s
 
+conn.o: conn.c.o
+
+.PHONY : conn.o
+
+# target to build an object file
+conn.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/conn.c.o
+.PHONY : conn.c.o
+
+conn.i: conn.c.i
+
+.PHONY : conn.i
+
+# target to preprocess a source file
+conn.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/conn.c.i
+.PHONY : conn.c.i
+
+conn.s: conn.c.s
+
+.PHONY : conn.s
+
+# target to generate assembly for a file
+conn.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/conn.c.s
+.PHONY : conn.c.s
+
+functions.o: functions.c.o
+
+.PHONY : functions.o
+
+# target to build an object file
+functions.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/functions.c.o
+.PHONY : functions.c.o
+
+functions.i: functions.c.i
+
+.PHONY : functions.i
+
+# target to preprocess a source file
+functions.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/functions.c.i
+.PHONY : functions.c.i
+
+functions.s: functions.c.s
+
+.PHONY : functions.s
+
+# target to generate assembly for a file
+functions.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/functions.c.s
+.PHONY : functions.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -181,6 +235,12 @@ help:
 	@echo "... Client.o"
 	@echo "... Client.i"
 	@echo "... Client.s"
+	@echo "... conn.o"
+	@echo "... conn.i"
+	@echo "... conn.s"
+	@echo "... functions.o"
+	@echo "... functions.i"
+	@echo "... functions.s"
 .PHONY : help
 
 

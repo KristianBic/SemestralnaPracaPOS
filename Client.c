@@ -12,19 +12,11 @@
 #include <netdb.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <pthread.h>
 
 
-/* The DEFAULT IP address and port number to connect to */
-#define DEFAULT_IPADDR "example.com"
-#define DEFAULT_PORTNUM 80
 
-#ifndef INADDR_NONE
-#define INADDR_NONE 0xffffffff
-#endif
-
-char *address; //will be displayed after every command
-int port;
-int sockfd;
+const char *localFile;
 
 struct FtpFile {
     const char *filename;
@@ -42,12 +34,6 @@ static size_t my_fwrite(void *buffer, size_t size, size_t nmemb, void *stream)
             return -1; /* failure, cannot open file to write */
     }
     return fwrite(buffer, size, nmemb, out->stream);
-}
-
-static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
-{
-    size_t written = fwrite(ptr, size, nmemb, (FILE *)stream);
-    return written;
 }
 
 static int closecb(void *clientp, int item)
@@ -146,12 +132,62 @@ void downloadHTMLfromHTTP(int sockfd) {
     printf("%.*s",byte_count,buf); // <-- give printf() the actual data size
 }
 
-void downloadHTTP(int sockfd) {
-    char *fileName = "stvrty.txt";
-    struct FtpFile ftpfile = { "prvy.txt", NULL};
+void http_download_file(void *arg)
+{
+    DownloadArgs *args = (DownloadArgs *)arg;
+    int sock = args->sock;
+    int content_length = args->content_length;
+    printf("args Content length of file in download: %d\n", content_length);
+    int bytes_received = 0;
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+
+    // Open local file for writing
+    FILE *fp = fopen(localFile, "w");
+    if (fp == NULL) {
+        perror("Error opening local file for writing");
+        pthread_exit(NULL);
+    }
+
+    // Read file data from HTTP response
+    char buffer[BUFFER_SIZE];
+    int bytes_read;
+    while ((bytes_read = recv(sock, buffer, BUFFER_SIZE, 0)) > 0) {
+        fwrite(buffer, 1, bytes_read, fp);
+        bytes_received += bytes_read;
+
+        // Update download status
+        gettimeofday(&end, NULL);
+        double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6;
+        double speed = bytes_received / elapsed;
+        double percentage = (double) bytes_received / content_length * 100;
+        // Display progress bar
+        int bar_length = 15;
+        int progress = (int)((percentage/100) * bar_length);
+        printf("\rDownloading... %d/%d bytes (%.2f%%) received (%.2f MB/s) [", bytes_received, content_length, percentage, speed / 1024.0 / 1024.0);
+        for (int i = 0; i < bar_length; i++) {
+            if (i < progress) {
+                printf("#");
+            } else {
+                printf(" ");
+            }
+        }
+        printf("]");
+        fflush(stdout);
+    }
+
+    // Close local file
+    fclose(fp);
+    // Close socket
+    close(sock);
+    printf("\nFile download complete: %s\n", localFile);
+    pthread_exit(NULL);
+}
+
+void downloadHTTP(int sockfd, URL_SLICED* slicedURL) {
     int fd;
 
-    if(access(fileName, F_OK) == 0) { //if file exists
+    if(access(localFile, F_OK) == 0) { //if file exists
         printf("Subor s rovnakym nazvom uz existuje. Chcete ho prepisat? (a/n): ");
         char answer[256];
         fgets(answer, sizeof(answer), stdin);
@@ -170,95 +206,88 @@ void downloadHTTP(int sockfd) {
         printf("Pokracujeme v stahovani.\n");
     }
 
-    if((fd = open(fileName, O_WRONLY | O_CREAT, 0666)) == -1) { //open file
+    if((fd = open(localFile, O_WRONLY | O_CREAT, 0666)) == -1) { //open file
         printf("Error. Subor sa neda otvorit\n");
         return;
     }
-    printf("Stahovanie suboru %s...\n", fileName);
+    printf("Stahovanie suboru %s...\n", localFile);
 
-    char recv_data[2056];
-    char* path = "index.html";
-    char* domain = "www.example.com";
-    char send_data[2056];
-    snprintf(send_data, sizeof(send_data), "GET /%s HTTP/1.1\\r\\nHost: %s\\r\\n\\r\\n\"", path, domain);
+    char recv_data[BUFFER_SIZE];
+    char send_data[BUFFER_SIZE];
 
-    send(sockfd,send_data,strlen(send_data),0);
-    printf("Send data...\n");
-    recv(sockfd,recv_data,sizeof(recv_data),0);
-
-    if(write(fd, recv_data, strlen(recv_data)) == -1) {
-        perror("Error writing to file");
-        close(fd);
-        return;
+    sprintf(send_data, "GET %s HTTP/1.1\r\nHost: %s\r\nConnection: close\r\n\r\n", slicedURL->domainPath, slicedURL->domain);
+    if (send(sockfd, send_data, strlen(send_data), 0) < 0)
+    {
+        perror("Error sending HTTP request - Send data");
+        exit(1);
     }
-    printf("Stahovanie uspesne\n");
+    printf("Data send...\n");
+
+    //recv(sockfd,recv_data,sizeof(recv_data),0);
+    if (recv(sockfd, recv_data, BUFFER_SIZE - 1, 0) < 0)
+    {
+        perror("Error reading HTTP response - send data");
+        exit(2);
+    }
+    recv_data[BUFFER_SIZE - 1] = '\0';
+    printf("Received HTTP response\n");
+
+    // Extract content length from HTTP response
+    char *length = strtok(recv_data, "\r\n");
+    int content_length = contentLength(length);
+    printf("Content length of file is: %d\n", content_length);
+
+    if (content_length < 0)
+    {
+        fprintf(stderr, "Error: content length not found in HTTP response\n");
+        exit(3);
+    }
+
+    DownloadArgs args;
+    args.sock = sockfd;
+    args.content_length = content_length;
+
+    pthread_t download_thread;
+    if (pthread_create(&download_thread, NULL, http_download_file, (void *)&args) != 0)
+    {
+        perror("Error creating pthread");
+        exit(4);
+    }
+
+    // Wait for pthread to finish
+    if (pthread_join(download_thread, NULL) != 0)
+    {
+        perror("Error waiting for pthread");
+        exit(5);
+    }
 
     close(fd);
 }
 
-int serverConnection() {
-    struct sockaddr_in server;
-    struct hostent *he;
-    struct in_addr **addr_list;
-    char *ipaddr;
-    int sockfd;
-
-    if((he = gethostbyname(address)) == NULL) {
-        herror("Error resolving hostname");
-        exit(-1);
-    } //end if
-
-    addr_list = (struct in_addr **) he->h_addr_list;
-
-    server.sin_family = AF_INET;
-    server.sin_port = htons(port);
-    server.sin_addr = *addr_list[0];
-
-    if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) { //create socket
-        perror("Socket failed");
-        close(sockfd);
-        exit(-1);
-    } //end if
-
-    ipaddr = inet_ntoa(*addr_list[0]);
-    printf("Connecting to %s [%s]...\n\n", address, ipaddr);
-    if(connect(sockfd, (struct sockaddr *)&server,
-               sizeof(struct sockaddr_in)) == -1) { //create connection
-        perror("Connection failed");
-        close(sockfd);
-        exit(-1);
-    } //end if
-
-    printf("Successful Connection. \n");
-    return sockfd;
-}
-
 int main(int argc, char *argv[])
 {
-    printf("-----------------------------------------\n");
-    printf("***** Vytajte v Download Manazerovi *****\n");
-    printf("-----------------------------------------\n");
+    URL_SLICED slicedURL;
+    CLIENT_INFO clientInfo; // prerobit aby to bolo iba v klientovi a nie v URL_SLICERI ...
+    int sockfd;
 
-    if(argc < 3) {
+    if(argc < 2) {
         fprintf(stderr, "Nedostatocny pocet argumentov! Program zada nasledujuce udaje: \n");
-        printf("Hostname: %s\n", DEFAULT_IPADDR);
-        printf("PortNumber: %d\n", DEFAULT_PORTNUM);
-        address = DEFAULT_IPADDR;
-        port = DEFAULT_PORTNUM;
+        split_url(&slicedURL, DEFAULT_HTTP_URL);
+        clientInfo.url = &slicedURL;
+        localFile = DEFAULT_HTTP_LOCALFILE;
+        printf("Protocol: %s\nSite: %s\nPort: %s\nPath: %s\n", slicedURL.protocol, slicedURL.domain, slicedURL.port, slicedURL.domainPath);
     } else {
-        address = argv[1];
-        port = atoi(argv[2]);
+        //domain = argv[1];
     }
-    if (port > 65536 || port < 0) {
+
+    if (atoi(slicedURL.port) > 65536 || atoi(slicedURL.port) < 0) {
         printf("Invalid Port Number!");
-        exit(5);
+        return -1;
     }
     printf("\n");
 
-    sockfd = serverConnection();
-    downloadHTTP(sockfd);
-    //downloadHTMLfromHTTP(sockfd);
-    //download(sockfd);
+    sockfd = serverConnection(&slicedURL);
+    downloadHTTP(sockfd, &slicedURL);
 
     return 0;
 }
