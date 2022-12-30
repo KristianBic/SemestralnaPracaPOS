@@ -2,6 +2,7 @@
 #include <malloc.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <sys/socket.h>
 #include "functions.h"
 
 URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
@@ -66,4 +67,17 @@ int contentLength(char *length) {
         length = strtok(NULL, "\r\n");
     }
     return content_length;
+}
+
+void downloadHTMLfromHTTP(int sockfd) {
+    char buf[2056];
+    int byte_count;
+
+    char *header = "GET /index.html HTTP/1.1\r\nHost: www.example.com\r\n\r\n";
+    send(sockfd,header,strlen(header),0);
+    printf("GET Sent...\n");
+    //all right ! now that we're connected, we can receive some data!
+    byte_count = recv(sockfd,buf,sizeof(buf),0);
+    printf("recv()'d %d bytes of data in buf\n",byte_count);
+    printf("%.*s",byte_count,buf); // <-- give printf() the actual data size
 }

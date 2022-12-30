@@ -196,6 +196,33 @@ conn.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/conn.c.s
 .PHONY : conn.c.s
 
+download.o: download.c.o
+
+.PHONY : download.o
+
+# target to build an object file
+download.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/download.c.o
+.PHONY : download.c.o
+
+download.i: download.c.i
+
+.PHONY : download.i
+
+# target to preprocess a source file
+download.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/download.c.i
+.PHONY : download.c.i
+
+download.s: download.c.s
+
+.PHONY : download.s
+
+# target to generate assembly for a file
+download.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SemestralnaPracaPOS.dir/build.make CMakeFiles/SemestralnaPracaPOS.dir/download.c.s
+.PHONY : download.c.s
+
 functions.o: functions.c.o
 
 .PHONY : functions.o
@@ -238,6 +265,9 @@ help:
 	@echo "... conn.o"
 	@echo "... conn.i"
 	@echo "... conn.s"
+	@echo "... download.o"
+	@echo "... download.i"
+	@echo "... download.s"
 	@echo "... functions.o"
 	@echo "... functions.i"
 	@echo "... functions.s"

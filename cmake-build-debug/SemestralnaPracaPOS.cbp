@@ -91,6 +91,12 @@
 		<Unit filename="/tmp/tmp.vsWNUjhacs/conn.h">
 			<Option target="SemestralnaPracaPOS"/>
 		</Unit>
+		<Unit filename="/tmp/tmp.vsWNUjhacs/download.c">
+			<Option target="SemestralnaPracaPOS"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.vsWNUjhacs/download.h">
+			<Option target="SemestralnaPracaPOS"/>
+		</Unit>
 		<Unit filename="/tmp/tmp.vsWNUjhacs/functions.c">
 			<Option target="SemestralnaPracaPOS"/>
 		</Unit>

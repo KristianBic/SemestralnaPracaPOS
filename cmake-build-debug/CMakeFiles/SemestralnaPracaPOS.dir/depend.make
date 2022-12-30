@@ -4,14 +4,13 @@
 CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o: ../Client.c
 CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o: ../Client.h
 CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o: ../config.h
-CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o: ../conn.c
+CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o: ../conn.h
 CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o: ../functions.h
 
 CMakeFiles/SemestralnaPracaPOS.dir/conn.c.o: ../conn.c
+CMakeFiles/SemestralnaPracaPOS.dir/conn.c.o: ../conn.h
 CMakeFiles/SemestralnaPracaPOS.dir/conn.c.o: ../functions.h
 
 CMakeFiles/SemestralnaPracaPOS.dir/functions.c.o: ../functions.c
 CMakeFiles/SemestralnaPracaPOS.dir/functions.c.o: ../functions.h
-
-CMakeFiles/SemestralnaPracaPOS.dir/http.c.o: ../http.c
 

@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -21,19 +20,23 @@ int serverConnection(URL_SLICED* slicedURL) {
     if((he = gethostbyname(slicedURL->domain)) == NULL) {
         herror("Error resolving hostname");
         exit(-1);
-    } //end if
+    }
 
     addr_list = (struct in_addr **) he->h_addr_list;
 
     server.sin_family = AF_INET;
-    server.sin_port = htons(atoi(slicedURL->port));
+    if (strcmp(slicedURL->protocol, "ftp") == 0) {
+        server.sin_port = htons(21);
+    } else {
+        server.sin_port = htons(atoi(slicedURL->port));
+    }
     server.sin_addr = *addr_list[0];
 
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) { //create socket
         perror("Socket failed");
         close(sockfd);
         exit(-1);
-    } //end if
+    }
 
     ipaddr = inet_ntoa(*addr_list[0]);
     printf("Connecting to %s [%s]...\n\n", slicedURL->domain, ipaddr);
@@ -41,7 +44,7 @@ int serverConnection(URL_SLICED* slicedURL) {
         perror("Connection failed");
         close(sockfd);
         exit(-1);
-    } //end if
+    }
 
     printf("Successful Connection. \n");
     return sockfd;
