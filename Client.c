@@ -33,6 +33,7 @@ int main()
         } else if (strcmp(input, "historia") == 0) {
             printf( "historia");
         } else if (strcmp(input, "pause") == 0) {
+            //tu bude treba prebehnut forkom cele pole a nie iba jedno ...
             pauseDownload(&zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
         }else if (strcmp(input, "resume") == 0) {
             resumeDownload(&zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
@@ -50,6 +51,7 @@ int main()
     }
     printf( "------------------------------------------------------------------------------------------- \n");
 
+    //tu bude treba prebehnut forkom cele pole a nie iba jedno ...
     free((void*)zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1].slicedURL->domain);
     free((void*)zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1].slicedURL->protocol);
 
