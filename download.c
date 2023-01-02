@@ -11,51 +11,52 @@
 
 #include "download.h"
 
-CLIENT_INFO client;
 
-void download(URL_SLICED* url, int socked) {
-    client.slicedURL = url;
-    client.sockfd = socked;
-    client.localFile = DEFAULT_HTTP_LOCALFILE;
-    client.username = "";
-    client.password = "";
-    client.fileSize = 0;
-    client.downloadedSize = 0;
-    client.priority = 0;
-    client.pause = false;
+CLIENT_INFO clientA;
+
+CLIENT_INFO download(URL_SLICED *slicedURL, int socked) {
+    clientA.slicedURL = slicedURL;
+    clientA.sockfd = socked;
+    clientA.localFile = DEFAULT_HTTP_LOCALFILE;
+    clientA.username = "";
+    clientA.password = "";
+    clientA.fileSize = 0;
+    clientA.downloadedSize = 0;
+    clientA.priority = 0;
+    clientA.pause = false;
 
     printf("Data na stahovanie boli inicializovane\n");
-    startDownload();
+    return clientA;
 }
 
-void startDownload() {
+void startDownload(CLIENT_INFO client) {
     client.downloading = true;
     if (client.pause) {
-        resumeDownload();
+        resumeDownload(client);
         return;
     }
-
+    printf("fewoijfgoweoqfnwofnqoefoiqjfqoiwjfoqwjfoiqjw %s\n", client.slicedURL->domain);
     if (strcmp(client.slicedURL->protocol, "http") == 0) {
-        downloadHTTP();
+        downloadHTTP(client);
     } else if (strcmp(client.slicedURL->protocol, "https") == 0) {
-        downloadHTTP();
+        downloadHTTP(client);
         //https();
     } else if (strcmp(client.slicedURL->protocol, "ftp") == 0) {
-        downloadHTTP();
+        downloadHTTP(client);
         //ftp();
     } else if (strcmp(client.slicedURL->protocol, "ftps") == 0) {
         //ftps();
     }
 }
 
-void pauseDownload() {
+void pauseDownload(CLIENT_INFO client) {
     client.downloading = false;
     client.pause = true;
     client.resume = false;
     printf("Stahovanie sa pozastavilo\n");
 }
 
-void stopDownload() {
+void stopDownload(CLIENT_INFO client) {
     client.downloading = false;
     client.stop = true;
     client.pause = true;
@@ -63,7 +64,7 @@ void stopDownload() {
     //pridat tu nieco
 }
 
-void resumeDownload() {
+void resumeDownload(CLIENT_INFO client) {
     client.downloading = true;
     client.resume = true;
     client.pause = false;
@@ -72,19 +73,19 @@ void resumeDownload() {
         return;
     }
     if (strcmp(client.slicedURL->protocol, "http") == 0) {
-        downloadHTTP();
+        downloadHTTP(client);
     } else if (strcmp(client.slicedURL->protocol, "https") == 0) {
-        downloadHTTP();
+        downloadHTTP(client);
         //https();
     } else if (strcmp(client.slicedURL->protocol, "ftp") == 0) {
-        downloadHTTP();
+        downloadHTTP(client);
         //ftp();
     } else if (strcmp(client.slicedURL->protocol, "ftps") == 0) {
         //ftps();
     }
 }
 
-void downloadHTTP() {
+void downloadHTTP(CLIENT_INFO client) {
 
     if(access(client.localFile, F_OK) == 0) { //if file exists
         printf("Subor s rovnakym nazvom uz existuje. Chcete ho prepisat? (a/n): ");

@@ -51,6 +51,9 @@ URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
     else if (r)
         slicedURL->protocol = "tcp";
 
+    char *fileName = strrchr(slicedURL->domainPath, '/') + 1;
+    if (fileName && *(fileName))
+        slicedURL->fileName = fileName;
     return slicedURL;
 }
 

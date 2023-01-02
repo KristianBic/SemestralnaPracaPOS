@@ -19,13 +19,12 @@ typedef struct clientInformations{
     bool downloading;
 } CLIENT_INFO;
 
-
-void download(URL_SLICED* slicedURL, int socked);
-void startDownload();
-void downloadHTMLfromHTTP(int sockfd);
+CLIENT_INFO download(URL_SLICED *slicedURL, int socked);
+void startDownload(CLIENT_INFO client);
+void stopDownload(CLIENT_INFO client);
 void http_download_file(void *arg);
-void downloadHTTP();
-void pauseDownload();
-void resumeDownload();
+void downloadHTTP(CLIENT_INFO client);
+void pauseDownload(CLIENT_INFO client);
+void resumeDownload(CLIENT_INFO client);
 
 #endif //SEMESTRALNAPRACAPOS_DOWNLOAD_H

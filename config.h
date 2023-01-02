@@ -12,6 +12,6 @@
 #define DEFAULT_FTP_PASSWORD ""
 
 #define BUFFER_SIZE 1024
-
+#define MAX_QUEUE_SIZE 10
 
 #endif
