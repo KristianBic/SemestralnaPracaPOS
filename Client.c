@@ -50,6 +50,9 @@ int main()
     }
     printf( "------------------------------------------------------------------------------------------- \n");
 
+    free((void*)zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1].slicedURL->domain);
+    free((void*)zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1].slicedURL->protocol);
+
     return 0;
 }
 

@@ -54,7 +54,11 @@ URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
     char *fileName = strrchr(slicedURL->domainPath, '/') + 1;
     if (fileName && *(fileName))
         slicedURL->fileName = fileName;
+
+    free(URL);
+    free(port_path_copy);
     return slicedURL;
+
 }
 
 int contentLength(char *length) {
