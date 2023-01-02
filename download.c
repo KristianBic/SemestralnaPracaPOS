@@ -86,7 +86,15 @@ void resumeDownload(CLIENT_INFO client) {
 }
 
 void downloadHTTP(CLIENT_INFO client) {
+    printf("Starting sownload %s\n", client.slicedURL->domain);
 
+    int fd;
+    if((fd = open(client.localFile, O_WRONLY | O_CREAT, 0666)) == -1) { //open file
+        printf("Error. Subor sa neda otvorit\n");
+        return;
+    }
+    //nasledujuci kod nefunguje ... neviem preco
+    /*
     if(access(client.localFile, F_OK) == 0) { //if file exists
         printf("Subor s rovnakym nazvom uz existuje. Chcete ho prepisat? (a/n): ");
         char answer[256];
@@ -104,12 +112,7 @@ void downloadHTTP(CLIENT_INFO client) {
     } else {
         printf("Pokracujeme v stahovani.\n");
     }
-
-    int fd;
-    if((fd = open(client.localFile, O_WRONLY | O_CREAT, 0666)) == -1) { //open file
-        printf("Error. Subor sa neda otvorit\n");
-        return;
-    }
+    */
     printf("Stahovanie suboru %s...\n", client.localFile);
 
     char recv_data[BUFFER_SIZE];
@@ -143,26 +146,15 @@ void downloadHTTP(CLIENT_INFO client) {
         exit(3);
     }
 
-    pthread_t download_thread;
-    if (pthread_create(&download_thread, NULL, http_download_file, (void *)&client) != 0)
-    {
-        perror("Error creating pthread");
-        exit(4);
-    }
-    printf("Download thread created\n");
-    // Wait for pthread to finish
-    if (pthread_join(download_thread, NULL) != 0)
-    {
-        perror("Error waiting for pthread");
-        exit(5);
-    }
+    http_download_file(&client);
+
     close(fd);
 }
 
-
-void http_download_file(void *arg)
+void* http_download_file(CLIENT_INFO *client)
 {
-    CLIENT_INFO *args = (CLIENT_INFO *)arg;
+    printf("Zacina sa stahovanie");
+    CLIENT_INFO* args = client;
     int sock = args->sockfd;
     int content_length = args->fileSize;
     char *local_file = args->localFile;
@@ -197,15 +189,15 @@ void http_download_file(void *arg)
         char time_str[20];
         time_t t = time(NULL);
         strftime(time_str, 20, "%d.%m.%Y %H:%M:%S", localtime(&t));
-        printf("\r%s Downloading... %.2f/%.2f M bytes (%.2f%%) received (%.2f MB/s) [", time_str, (double)bytes_received/(1024*1024), (double)content_length/(1024*1024), percentage * 100, speed / 1024.0 / 1024.0);
+        //printf("\r%s Downloading... %.2f/%.2f M bytes (%.2f%%) received (%.2f MB/s) [", time_str, (double)bytes_received/(1024*1024), (double)content_length/(1024*1024), percentage * 100, speed / 1024.0 / 1024.0);
         for (int i = 0; i < bar_length; i++) {
             if (i <= progress) {
-                printf("#");
+                //printf("#");
             } else {
-                printf(" ");
+                //printf(" ");
             }
         }
-        printf("] (Time elapsed: %.2f seconds)",elapsed);
+        //printf("] (Time elapsed: %.2f seconds)",elapsed);
         fflush(stdout);
     }
 

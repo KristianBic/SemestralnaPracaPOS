@@ -20,9 +20,16 @@ int main()
         printf("\n->  ");
         gets(input);
         if(strcmp(input, "download") == 0) {
+            //najprv implementovat veci a az potom dat do vlakna stahovanie
+            URL_SLICED urlSliced;
+            urlSliced = downloadInput();
+            int sock = serverConnection(&urlSliced);
+            zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov] = download(&urlSliced, sock);
+            zoznamVlakien.pocetPrvkov++;
 
             pthread_create(&threadDownload, NULL, downloadThread, &zoznamVlakien);
-            pthread_join(threadDownload, NULL);
+            pthread_detach(threadDownload);
+
         } else if (strcmp(input, "history") == 0) {
             printf( "historia");
         } else if (strcmp(input, "pause") == 0) {
@@ -33,7 +40,7 @@ int main()
             stopDownload(zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
         }else if (strcmp(input, "start") == 0) {
             printf("************************************ %s\n",  zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1].slicedURL->domain);
-            startDownload(zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
+
         }else if (strcmp(input, "exit") == 0) {
             break;
         } else {
@@ -47,12 +54,8 @@ int main()
 
 void* downloadThread(void* vlaknaPar) {
     ZOZNAM_VLAKIEN* zoznamVlakien = vlaknaPar;
-
-    URL_SLICED urlSliced;
-    urlSliced = downloadInput();
-    int sock = serverConnection(&urlSliced);
-    zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov] = download(&urlSliced, sock);
-    zoznamVlakien->pocetPrvkov++;
+    startDownload(zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1]);
+    //tu dat startDownload
     printf("************************************ %s\n",  zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1].slicedURL->domain);
 }
 
