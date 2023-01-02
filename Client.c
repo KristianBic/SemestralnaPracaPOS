@@ -9,7 +9,7 @@
 int main()
 {
     ZOZNAM_VLAKIEN zoznamVlakien;
-    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
     char input[100];
     zoznamVlakien.pocetPrvkov = 0;
     pthread_t threadDownload;
@@ -35,7 +35,7 @@ int main()
         } else if (strcmp(input, "pause") == 0) {
             pauseDownload(&zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
         }else if (strcmp(input, "resume") == 0) {
-            resumeDownload(zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
+            resumeDownload(&zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
         }else if (strcmp(input, "stop") == 0) {
             stopDownload(zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
         }else if (strcmp(input, "start") == 0) {
@@ -55,7 +55,7 @@ int main()
 
 void* downloadThread(void* vlaknaPar) {
     ZOZNAM_VLAKIEN* zoznamVlakien = vlaknaPar;
-    startDownload(zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1]);
+    startDownload(&zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1]);
     printf("************************************ %s\n",  zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1].slicedURL->domain);
 
 }

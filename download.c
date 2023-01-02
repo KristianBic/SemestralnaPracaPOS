@@ -12,9 +12,10 @@
 #include "download.h"
 
 
-CLIENT_INFO clientA;
+
 
 CLIENT_INFO download(URL_SLICED *slicedURL, int socked) {
+    CLIENT_INFO clientA;
     clientA.slicedURL = slicedURL;
     clientA.sockfd = socked;
     clientA.localFile = DEFAULT_HTTP_LOCALFILE;
@@ -29,21 +30,21 @@ CLIENT_INFO download(URL_SLICED *slicedURL, int socked) {
     return clientA;
 }
 
-void startDownload(CLIENT_INFO client) {
-    client.downloading = true;
-    if (client.pause) {
+void startDownload(CLIENT_INFO* client) {
+    client->downloading = true;
+    if (client->pause) {
         resumeDownload(client);
         return;
     }
-    if (strcmp(client.slicedURL->protocol, "http") == 0) {
+    if (strcmp(client->slicedURL->protocol, "http") == 0) {
         downloadHTTP(client);
-    } else if (strcmp(client.slicedURL->protocol, "https") == 0) {
+    } else if (strcmp(client->slicedURL->protocol, "https") == 0) {
         downloadHTTP(client);
         //https();
-    } else if (strcmp(client.slicedURL->protocol, "ftp") == 0) {
+    } else if (strcmp(client->slicedURL->protocol, "ftp") == 0) {
         downloadHTTP(client);
         //ftp();
-    } else if (strcmp(client.slicedURL->protocol, "ftps") == 0) {
+    } else if (strcmp(client->slicedURL->protocol, "ftps") == 0) {
         //ftps();
     }
 }
@@ -65,32 +66,32 @@ void stopDownload(CLIENT_INFO client) {
     //pridat tu nieco
 }
 
-void resumeDownload(CLIENT_INFO client) {
-    client.downloading = true;
-    client.resume = true;
-    client.pause = false;
+void resumeDownload(CLIENT_INFO* client) {
+    client->downloading = true;
+    client->resume = true;
+    client->pause = false;
     printf("Stahovanie sa znovu spustilo\n");
-    if (client.stop) {
+    if (client->stop) {
         return;
     }
-    if (strcmp(client.slicedURL->protocol, "http") == 0) {
-        downloadHTTP(client);
-    } else if (strcmp(client.slicedURL->protocol, "https") == 0) {
-        downloadHTTP(client);
+    if (strcmp(client->slicedURL->protocol, "http") == 0) {
+        http_download_file(client);
+    } else if (strcmp(client->slicedURL->protocol, "https") == 0) {
+        http_download_file(client);
         //https();
-    } else if (strcmp(client.slicedURL->protocol, "ftp") == 0) {
-        downloadHTTP(client);
+    } else if (strcmp(client->slicedURL->protocol, "ftp") == 0) {
+        http_download_file(client);
         //ftp();
-    } else if (strcmp(client.slicedURL->protocol, "ftps") == 0) {
+    } else if (strcmp(client->slicedURL->protocol, "ftps") == 0) {
         //ftps();
     }
 }
 
-void downloadHTTP(CLIENT_INFO client) {
-    printf("Starting sownload %s\n", client.slicedURL->domain);
+void downloadHTTP(CLIENT_INFO* client) {
+    printf("Starting sownload %s\n", client->slicedURL->domain);
 
     int fd;
-    if((fd = open(client.localFile, O_WRONLY | O_CREAT, 0666)) == -1) { //open file
+    if((fd = open(client->localFile, O_WRONLY | O_CREAT, 0666)) == -1) { //open file
         printf("Error. Subor sa neda otvorit\n");
         return;
     }
@@ -114,13 +115,13 @@ void downloadHTTP(CLIENT_INFO client) {
         printf("Pokracujeme v stahovani.\n");
     }
     */
-    printf("Stahovanie suboru %s...\n", client.localFile);
+    printf("Stahovanie suboru %s...\n", client->localFile);
 
     char recv_data[BUFFER_SIZE];
     char send_data[BUFFER_SIZE];
 
-    sprintf(send_data, "GET %s HTTP/1.1\r\nHost: %s\r\nConnection: close\r\n\r\n", client.slicedURL->domainPath, client.slicedURL->domain);
-    if (send(client.sockfd, send_data, strlen(send_data), 0) < 0)
+    sprintf(send_data, "GET %s HTTP/1.1\r\nHost: %s\r\nConnection: close\r\n\r\n", client->slicedURL->domainPath, client->slicedURL->domain);
+    if (send(client->sockfd, send_data, strlen(send_data), 0) < 0)
     {
         perror("Error sending HTTP request - Send data");
         exit(1);
@@ -128,7 +129,7 @@ void downloadHTTP(CLIENT_INFO client) {
     printf("Data send...\n");
 
     //recv(sockfd,recv_data,sizeof(recv_data),0);
-    if (recv(client.sockfd, recv_data, BUFFER_SIZE - 1, 0) < 0)
+    if (recv(client->sockfd, recv_data, BUFFER_SIZE - 1, 0) < 0)
     {
         perror("Error reading HTTP response - send data");
         exit(2);
@@ -138,16 +139,16 @@ void downloadHTTP(CLIENT_INFO client) {
 
     // Extract content length from HTTP response
     char *length = strtok(recv_data, "\r\n");
-    client.fileSize = contentLength(length);
-    printf("Content length of file is: %d\n", client.fileSize);
+    client->fileSize = contentLength(length);
+    printf("Content length of file is: %d\n", client->fileSize);
 
-    if (client.fileSize < 0)
+    if (client->fileSize < 0)
     {
         fprintf(stderr, "Error: content length not found in HTTP response\n");
         exit(3);
     }
 
-    http_download_file(&client);
+    http_download_file(client);
 
     close(fd);
 }
@@ -176,8 +177,8 @@ void* http_download_file(CLIENT_INFO *client)
     gettimeofday(&start, NULL);
     while ((bytes_read = recv(sock, buffer, BUFFER_SIZE, 0)) > 0) {
         if(client->pause) {
-            printf("Paused\n");
-        }
+            sleep(1);
+        } else {
         fwrite(buffer, 1, bytes_read, fp);
         bytes_received += bytes_read;
 
@@ -203,6 +204,7 @@ void* http_download_file(CLIENT_INFO *client)
         }
         //printf("] (Time elapsed: %.2f seconds)",elapsed);
         fflush(stdout);
+        }
     }
 
     // Close local file
