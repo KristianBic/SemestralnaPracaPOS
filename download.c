@@ -35,7 +35,6 @@ void startDownload(CLIENT_INFO client) {
         resumeDownload(client);
         return;
     }
-    printf("fewoijfgoweoqfnwofnqoefoiqjfqoiwjfoqwjfoiqjw %s\n", client.slicedURL->domain);
     if (strcmp(client.slicedURL->protocol, "http") == 0) {
         downloadHTTP(client);
     } else if (strcmp(client.slicedURL->protocol, "https") == 0) {
@@ -49,10 +48,12 @@ void startDownload(CLIENT_INFO client) {
     }
 }
 
-void pauseDownload(CLIENT_INFO client) {
-    client.downloading = false;
-    client.pause = true;
-    client.resume = false;
+void pauseDownload(CLIENT_INFO* client) {
+    printf("Stahovanie sa pozastavilo %s\n", client->slicedURL->domain);
+
+    client->downloading = false;
+    client->pause = true;
+    client->resume = false;
     printf("Stahovanie sa pozastavilo\n");
 }
 
@@ -174,6 +175,9 @@ void* http_download_file(CLIENT_INFO *client)
     struct timeval start, end;
     gettimeofday(&start, NULL);
     while ((bytes_read = recv(sock, buffer, BUFFER_SIZE, 0)) > 0) {
+        if(client->pause) {
+            printf("Paused\n");
+        }
         fwrite(buffer, 1, bytes_read, fp);
         bytes_received += bytes_read;
 

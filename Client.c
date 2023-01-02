@@ -30,10 +30,10 @@ int main()
             pthread_create(&threadDownload, NULL, downloadThread, &zoznamVlakien);
             pthread_detach(threadDownload);
 
-        } else if (strcmp(input, "history") == 0) {
+        } else if (strcmp(input, "historia") == 0) {
             printf( "historia");
         } else if (strcmp(input, "pause") == 0) {
-            pauseDownload(zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
+            pauseDownload(&zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
         }else if (strcmp(input, "resume") == 0) {
             resumeDownload(zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
         }else if (strcmp(input, "stop") == 0) {
@@ -46,6 +46,7 @@ int main()
         } else {
             printf( "Zadali ste nespravny tvar. Skuste znovu. \n");
         }
+        printf("\n");
     }
     printf( "------------------------------------------------------------------------------------------- \n");
 
@@ -55,8 +56,8 @@ int main()
 void* downloadThread(void* vlaknaPar) {
     ZOZNAM_VLAKIEN* zoznamVlakien = vlaknaPar;
     startDownload(zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1]);
-    //tu dat startDownload
     printf("************************************ %s\n",  zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1].slicedURL->domain);
+
 }
 
 

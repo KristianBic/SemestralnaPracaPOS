@@ -13,7 +13,6 @@ typedef struct
 {
     CLIENT_INFO vlakna[MAX_QUEUE_SIZE];
     int pocetPrvkov;
-    pthread_mutex_t lock;
 } ZOZNAM_VLAKIEN;
 
 void* downloadThread(void* zoznamVlakien);
