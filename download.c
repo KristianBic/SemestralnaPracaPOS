@@ -155,15 +155,10 @@ void downloadHTTP(CLIENT_INFO* client) {
 
 void* http_download_file(CLIENT_INFO *client)
 {
-    printf("Zacina sa stahovanie");
-    CLIENT_INFO* args = client;
-    int sock = args->sockfd;
-    int content_length = args->fileSize;
-    char *local_file = args->localFile;
-    printf("File download pthread created\n");
+    printf("Zacina sa stahovanie\n");
 
     // Open local file for writing
-    FILE *fp = fopen(local_file, "w");
+    FILE *fp = fopen(client->localFile, "w");
     if (fp == NULL) {
         perror("Error opening local file for writing");
         pthread_exit(NULL);
@@ -172,21 +167,20 @@ void* http_download_file(CLIENT_INFO *client)
     // Read file data from HTTP response
     char buffer[BUFFER_SIZE];
     int bytes_read;
-    int bytes_received = 0;
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    while ((bytes_read = recv(sock, buffer, BUFFER_SIZE, 0)) > 0) {
+    while ((bytes_read = recv(client->sockfd, buffer, BUFFER_SIZE, 0)) > 0) {
         if(client->pause) {
             sleep(1);
         } else {
         fwrite(buffer, 1, bytes_read, fp);
-        bytes_received += bytes_read;
+        client->downloadedSize += bytes_read;
 
         // Update download status
         gettimeofday(&end, NULL);
         double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6;
-        double speed = bytes_received / elapsed;
-        double percentage = (double) bytes_received / content_length;
+        double speed = client->downloadedSize / elapsed;
+        double percentage = (double) client->downloadedSize / client->fileSize;
 
         // Display progress bar
         int bar_length = 50;
@@ -206,12 +200,12 @@ void* http_download_file(CLIENT_INFO *client)
         fflush(stdout);
         }
     }
-    write_to_log(client->localFile, client->slicedURL->domain, bytes_received, getSizeUnit(bytes_received), 0);
+    write_to_log(client->localFile, client->slicedURL->domain, client->downloadedSize, getSizeUnit(client->downloadedSize), 0);
     // Close local file
     fclose(fp);
     // Close socket
-    close(sock);
-    printf("\nFile download complete: %s\n", local_file);
+    close(client->sockfd);
+    printf("\nFile download complete: %s\n", client->localFile);
     printf("File download pthread closed\n");
     pthread_exit(NULL);
 }

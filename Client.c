@@ -48,7 +48,19 @@ int main()
                 }
             }
         } else if (strcmp(input, "historia") == 0) {
-            printLog();
+            printf( "Zadajte co chcete robit - show , clear\n");
+            printf("\n->  ");
+
+            char input[100];
+            gets(input);
+            if (strcmp(input, "show") == 0) {
+                printLog();
+            } else if (strcmp(input, "clear") == 0) {
+                clear_log();
+            } else {
+                printf( "Nespravny imput\n");
+            }
+
         } else if (strcmp(input, "pause") == 0) {
             printInformations(&zoznamVlakien);
             printf( "Zadajte id procesu\n");
