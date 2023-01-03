@@ -14,6 +14,7 @@ typedef struct clientInformations{
     int downloadedSize;
     int priority;
     int id;
+    int planningTime;
     bool pause;
     bool resume;
     bool stop;

@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
-
-void printInformations(ZOZNAM_VLAKIEN *ptr);
 
 int main()
 {
+
     ZOZNAM_VLAKIEN zoznamVlakien;
     zoznamVlakien.pocetPrvkov = 0;
     char input[100];
@@ -24,6 +24,7 @@ int main()
             urlSliced = downloadInput();
             int sock = serverConnection(&urlSliced);
             zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov] = download(&urlSliced, sock, zoznamVlakien.pocetPrvkov);
+            zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov].planningTime = imputPlanningTime();
             zoznamVlakien.pocetPrvkov++;
 
             pthread_create(&threadDownload, NULL, downloadThread, &zoznamVlakien);
@@ -146,6 +147,7 @@ void printInformations(ZOZNAM_VLAKIEN *ptr) {
 
 void* downloadThread(void* vlaknaPar) {
     ZOZNAM_VLAKIEN* zoznamVlakien = vlaknaPar;
+    sleep(zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1].planningTime);
     startDownload(&zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1]);
 }
 
@@ -188,4 +190,28 @@ URL_SLICED downloadInput() {
     printf( "------------------------------------------------------------------------------------------- \n");
 
     return urlSliced;
+}
+
+int imputPlanningTime() {
+    char cas[100];
+    char hodina[100];
+    char minuta [100];
+    char sekunda[100];
+    printf( "Chcete naplánovať čas, kedy sa má sťahovanie začať? (a/n) \n");
+    gets(cas);
+    if (strcmp(cas, "a") == 0) {
+        printf( "Zadajte pocet hodin \n");
+        gets(hodina);
+        printf( "Zadajte pocet minut \n");
+        gets(minuta);
+        printf( "Zadajte pocet sekund \n");
+        gets(sekunda);
+    } else if (strcmp(cas, "n") != 0) {
+
+    } else {
+        printf( "Zadali ste nespravy vstup ... budeme pokracovat v stahovani \n");
+    }
+    printf( "Download sa zacne o %d:%d:%d \n", atoi(hodina), atoi(minuta), atoi(sekunda));
+
+    return (atoi(sekunda) + (atoi(minuta) * 60) + (atoi(hodina) * 60 * 60));
 }

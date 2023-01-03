@@ -16,6 +16,7 @@ void downloadHTMLfromHTTP(int sockfd);
 
 char *getCurrentTime();
 void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time);
+char *getCurrentDirectory();
 char *getSizeUnit(double size);
 void printLog();
 void clear_log();

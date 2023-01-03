@@ -19,4 +19,5 @@ void printInformations(ZOZNAM_VLAKIEN *ptr);
 void* downloadThread(void* zoznamVlakien);
 void initialInput();
 URL_SLICED downloadInput();
+int imputPlanningTime();
 #endif //SEMESTRALNAPRACAPOS_CLIENT_H

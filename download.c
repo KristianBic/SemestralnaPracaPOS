@@ -200,12 +200,12 @@ void* http_download_file(CLIENT_INFO *client)
         fflush(stdout);
         }
     }
-    write_to_log(client->localFile, client->slicedURL->domain, client->downloadedSize, getSizeUnit(client->downloadedSize), 0);
     // Close local file
     fclose(fp);
     // Close socket
     close(client->sockfd);
     printf("\nFile download complete: %s\n", client->localFile);
     printf("File download pthread closed\n");
+    write_to_log(client->localFile, client->slicedURL->domain, client->downloadedSize, getSizeUnit(client->downloadedSize), 0);
     pthread_exit(NULL);
 }

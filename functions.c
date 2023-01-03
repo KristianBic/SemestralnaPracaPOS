@@ -153,24 +153,6 @@ char *getSizeUnit(double size)
 void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time)
 {
     FILE *log_file;
-    time_t current_time;
-    char *time_string;
-
-    log_file = fopen("log_file.txt", "a");
-    if (log_file == NULL)
-    {
-        perror("Error: fopen");
-        return;
-    }
-
-    current_time = time(NULL);
-    time_string = ctime(&current_time);
-    time_string[strlen(time_string) - 1] = '\0';
-
-    fprintf(log_file, "%s: Downloaded file %s from URL %s (%d bytes in %.2lf seconds)\n", time_string, filename, url, size, elapsed_time);
-
-    fclose(log_file);
-    // ----------------------------------------------------------------------novy
     // Open log file in append mode
     FILE *fp = fopen("log_file.txt", "a");
     if (fp == NULL)
@@ -178,42 +160,31 @@ void write_to_log(char *filename, char *url, int size, char *sizeUnit, double el
         perror("Error opening log file");
         return;
     }
-
     // Get current time
-    time_t t = time(NULL);
-    struct tm *tm = localtime(&t);
-    char time_str[20];
-    strftime(time_str, 20, "%Y-%m-%d %H:%M:%S", tm);
-
+    char *time_str = getCurrentTime();
     // Get current working directory
-    char cwd[1024];
-    if (getcwd(cwd, sizeof(cwd)) == NULL)
-    {
-        perror("Error getting current working directory");
-        return;
-    }
-
-    char *units = getSizeUnit(size);
-    // Convert file size to the best units
-    // char *
-    //     units[] = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
-    // int i = 0;
-    // while (size > 1024)
-    // {
-    //   size /= 1024;
-    //   i++;
-    // }
+    char *cwd = getCurrentDirectory();
+    char *size_units = getSizeUnit(size);
 
     // Write log entry to file
-    // fprintf(fp, "[%s] Downloaded file '%s' (%d %s) from %s to %s\n", time_str, filename, (int)size, units[i], url, cwd);
-    // Write log entry to file
-    fprintf(fp, "[%s] Downloaded file '%s' (%d %s) from %s to %s\n", time_str, filename, (int)size, units, url, cwd);
+    fprintf(fp, "[%s] Downloaded file '%s' (%s in %.2lf seconds) from %s to %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
 
     // Print log entry to console
-    // printf("[%s] Downloaded from %s to '%s' (%.2f %s)\n", time_str, url, filename, size, units[i]);
+    printf("[%s] Downloaded file '%s' (%s in %.2lf seconds) from %s to %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
 
     // Close log file
     fclose(fp);
+}
+
+char *getCurrentDirectory()
+{
+    static char buffer[1024];
+    if (getcwd(buffer, 1024) == NULL)
+    {
+        printf("Error: ziskanie aktualneho pracovneho adresara");
+        return NULL;
+    }
+    return buffer;
 }
 
 char *getCurrentTime()
