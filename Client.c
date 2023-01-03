@@ -4,14 +4,13 @@
 #include <string.h>
 
 
-
+void printInformations(ZOZNAM_VLAKIEN *ptr);
 
 int main()
 {
     ZOZNAM_VLAKIEN zoznamVlakien;
-
-    char input[100];
     zoznamVlakien.pocetPrvkov = 0;
+    char input[100];
     pthread_t threadDownload;
 
     printf( "------------------------------------------------------------------------------------------- \n");
@@ -20,28 +19,81 @@ int main()
         printf("\n->  ");
         gets(input);
         if(strcmp(input, "download") == 0) {
-            //najprv implementovat veci a az potom dat do vlakna stahovanie
+
             URL_SLICED urlSliced;
             urlSliced = downloadInput();
             int sock = serverConnection(&urlSliced);
-            zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov] = download(&urlSliced, sock);
+            zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov] = download(&urlSliced, sock, zoznamVlakien.pocetPrvkov);
             zoznamVlakien.pocetPrvkov++;
 
             pthread_create(&threadDownload, NULL, downloadThread, &zoznamVlakien);
             pthread_detach(threadDownload);
 
+        }else if (strcmp(input, "information") == 0) {
+            printInformations(&zoznamVlakien);
         } else if (strcmp(input, "historia") == 0) {
-            printf( "historia");
+            printLog();
         } else if (strcmp(input, "pause") == 0) {
-            //tu bude treba prebehnut forkom cele pole a nie iba jedno ...
-            pauseDownload(&zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
-        }else if (strcmp(input, "resume") == 0) {
-            resumeDownload(&zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
-        }else if (strcmp(input, "stop") == 0) {
-            stopDownload(zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1]);
-        }else if (strcmp(input, "start") == 0) {
-            printf("************************************ %s\n",  zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1].slicedURL->domain);
+            printInformations(&zoznamVlakien);
+            printf( "Zadajte id procesu\n");
+            printf("\n->  ");
+            char proces[2];
+            gets(proces);
+            char *command = strtok(proces, " ");
 
+            for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
+                char str[2];
+                sprintf(str, "%d", i);
+                printf( "str: %s, command: %s, i: %d\n", str, command, i);
+                if(strcmp(command, str) == 0) {
+                    pauseDownload(&zoznamVlakien.vlakna[i]);
+                }
+            }
+        }else if (strcmp(input, "resume") == 0) {
+            printInformations(&zoznamVlakien);
+            printf( "Zadajte id procesu\n");
+            printf("\n->  ");
+            char proces[2];
+            gets(proces);
+            char *command = strtok(proces, " ");
+
+            for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
+                char str[2];
+                sprintf(str, "%d", i);
+                printf( "str: %s, command: %s, i: %d\n", str, command, i);
+                if(strcmp(command, str) == 0) {
+                    resumeDownload(&zoznamVlakien.vlakna[i]);
+                }
+            }
+
+        }else if (strcmp(input, "stop") == 0) {
+            printInformations(&zoznamVlakien);
+            printf( "Zadajte id procesu\n");
+            printf("\n->  ");
+            char proces[2];
+            gets(proces);
+            char *command = strtok(proces, " ");
+
+            for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
+                char str[2];
+                sprintf(str, "%d", i);
+                printf( "str: %s, command: %s, i: %d\n", str, command, i);
+                if(strcmp(command, str) == 0) {
+                    stopDownload(zoznamVlakien.vlakna[i]);
+                }
+            }
+        } else if (strcmp(input, "pauseALL") == 0) {
+            for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
+                pauseDownload(&zoznamVlakien.vlakna[i]);
+            }
+        }else if (strcmp(input, "resumeALL") == 0) {
+            for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
+                resumeDownload(&zoznamVlakien.vlakna[i]);
+            }
+        }else if (strcmp(input, "stopALL") == 0) {
+            for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
+                stopDownload(zoznamVlakien.vlakna[i]);
+            }
         }else if (strcmp(input, "exit") == 0) {
             break;
         } else {
@@ -51,18 +103,25 @@ int main()
     }
     printf( "------------------------------------------------------------------------------------------- \n");
 
-    //tu bude treba prebehnut forkom cele pole a nie iba jedno ...
-    free((void*)zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1].slicedURL->domain);
-    free((void*)zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov - 1].slicedURL->protocol);
+
+    for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
+        free((void *) zoznamVlakien.vlakna[i].slicedURL->domain);
+        free((void *) zoznamVlakien.vlakna[i].slicedURL->protocol);
+    }
 
     return 0;
 }
 
+void printInformations(ZOZNAM_VLAKIEN *ptr) {
+    for (int i = 0; i < ptr->pocetPrvkov; ++i) {
+        printf("Download s id %d ma: Domain %s a prioritu %d\n",  ptr->vlakna[i].id, ptr->vlakna[i].slicedURL->domain, ptr->vlakna[i].priority);
+    }
+}
+
+
 void* downloadThread(void* vlaknaPar) {
     ZOZNAM_VLAKIEN* zoznamVlakien = vlaknaPar;
     startDownload(&zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1]);
-    printf("************************************ %s\n",  zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1].slicedURL->domain);
-
 }
 
 

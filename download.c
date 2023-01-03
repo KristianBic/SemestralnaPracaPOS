@@ -14,7 +14,7 @@
 
 
 
-CLIENT_INFO download(URL_SLICED *slicedURL, int socked) {
+CLIENT_INFO download(URL_SLICED *slicedURL, int socked, int id) {
     CLIENT_INFO clientA;
     clientA.slicedURL = slicedURL;
     clientA.sockfd = socked;
@@ -25,7 +25,7 @@ CLIENT_INFO download(URL_SLICED *slicedURL, int socked) {
     clientA.downloadedSize = 0;
     clientA.priority = 0;
     clientA.pause = false;
-
+    clientA.id = id;
     printf("Data na stahovanie boli inicializovane\n");
     return clientA;
 }
@@ -206,7 +206,7 @@ void* http_download_file(CLIENT_INFO *client)
         fflush(stdout);
         }
     }
-
+    write_to_log(client->localFile, client->slicedURL->domain, bytes_received, getSizeUnit(bytes_received), 0);
     // Close local file
     fclose(fp);
     // Close socket

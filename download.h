@@ -13,13 +13,14 @@ typedef struct clientInformations{
     int fileSize;
     int downloadedSize;
     int priority;
+    int id;
     bool pause;
     bool resume;
     bool stop;
     bool downloading;
 } CLIENT_INFO;
 
-CLIENT_INFO download(URL_SLICED *slicedURL, int socked);
+CLIENT_INFO download(URL_SLICED *slicedURL, int socked, int id);
 void startDownload(CLIENT_INFO* client);
 void stopDownload(CLIENT_INFO client);
 void* http_download_file(CLIENT_INFO* client);

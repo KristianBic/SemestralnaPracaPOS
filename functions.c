@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <sys/socket.h>
+#include <time.h>
+#include <unistd.h>
 #include "functions.h"
 
 URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
@@ -55,8 +57,8 @@ URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
     if (fileName && *(fileName))
         slicedURL->fileName = fileName;
 
-    free(URL);
-    free(port_path_copy);
+    //free(URL);
+    //free(port_path_copy);
     return slicedURL;
 
 }
@@ -87,4 +89,138 @@ void downloadHTMLfromHTTP(int sockfd) {
     byte_count = recv(sockfd,buf,sizeof(buf),0);
     printf("recv()'d %d bytes of data in buf\n",byte_count);
     printf("%.*s",byte_count,buf); // <-- give printf() the actual data size
+}
+
+// Clear log file
+void clear_log()
+{
+    // pthread_mutex_lock(&log_lock);
+    FILE *fp = fopen("log_file.txt", "w");
+    if (fp == NULL)
+    {
+        printf("Error: nemohol otvorit subor log_file na vymazanie historie\n");
+    }
+    else
+    {
+        fclose(fp);
+    }
+    // pthread_mutex_unlock(&log_lock);
+}
+
+// Display log file
+void printLog()
+{
+    // pthread_mutex_lock(&log_lock);
+    FILE *fp = fopen("log_file.txt", "r");
+    if (fp == NULL)
+    {
+        printf("Error: nemohol otvorit subor log_file na vypis\n");
+    }
+    else
+    {
+        char line[1024];
+        while (fgets(line, 1024, fp) != NULL)
+        {
+            printf("%s", line);
+        }
+        fclose(fp);
+    }
+    // pthread_mutex_unlock(&log_lock);
+}
+
+char *getSizeUnit(double size)
+{
+    static char unit[4];
+    if (size < 1024)
+    {
+        sprintf(unit, "%d B", size);
+    }
+    else if (size < 1024 * 1024)
+    {
+        sprintf(unit, "%.1f KB", (double)size / 1024.0);
+    }
+    else if (size < 1024 * 1024 * 1024)
+    {
+        sprintf(unit, "%.1f MB", (double)size / (1024.0 * 1024.0));
+    }
+    else
+    {
+        sprintf(unit, "%.1f GB", (double)size / (1024.0 * 1024.0 * 1024.0));
+    }
+    return unit;
+}
+
+void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time)
+{
+    FILE *log_file;
+    time_t current_time;
+    char *time_string;
+
+    log_file = fopen("log_file.txt", "a");
+    if (log_file == NULL)
+    {
+        perror("Error: fopen");
+        return;
+    }
+
+    current_time = time(NULL);
+    time_string = ctime(&current_time);
+    time_string[strlen(time_string) - 1] = '\0';
+
+    fprintf(log_file, "%s: Downloaded file %s from URL %s (%d bytes in %.2lf seconds)\n", time_string, filename, url, size, elapsed_time);
+
+    fclose(log_file);
+    // ----------------------------------------------------------------------novy
+    // Open log file in append mode
+    FILE *fp = fopen("log_file.txt", "a");
+    if (fp == NULL)
+    {
+        perror("Error opening log file");
+        return;
+    }
+
+    // Get current time
+    time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+    char time_str[20];
+    strftime(time_str, 20, "%Y-%m-%d %H:%M:%S", tm);
+
+    // Get current working directory
+    char cwd[1024];
+    if (getcwd(cwd, sizeof(cwd)) == NULL)
+    {
+        perror("Error getting current working directory");
+        return;
+    }
+
+    char *units = getSizeUnit(size);
+    // Convert file size to the best units
+    // char *
+    //     units[] = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
+    // int i = 0;
+    // while (size > 1024)
+    // {
+    //   size /= 1024;
+    //   i++;
+    // }
+
+    // Write log entry to file
+    // fprintf(fp, "[%s] Downloaded file '%s' (%d %s) from %s to %s\n", time_str, filename, (int)size, units[i], url, cwd);
+    // Write log entry to file
+    fprintf(fp, "[%s] Downloaded file '%s' (%d %s) from %s to %s\n", time_str, filename, (int)size, units, url, cwd);
+
+    // Print log entry to console
+    // printf("[%s] Downloaded from %s to '%s' (%.2f %s)\n", time_str, url, filename, size, units[i]);
+
+    // Close log file
+    fclose(fp);
+}
+
+char *getCurrentTime()
+{
+    time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+    char *time_str = malloc(sizeof(char) * 20);
+    strftime(time_str, 20, "%Y-%m-%d %H:%M:%S", tm);
+    return time_str;
 }
