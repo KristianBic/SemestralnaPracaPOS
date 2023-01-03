@@ -31,6 +31,22 @@ int main()
 
         }else if (strcmp(input, "information") == 0) {
             printInformations(&zoznamVlakien);
+        }else if (strcmp(input, "priority") == 0) {
+            printInformations(&zoznamVlakien);
+            printf( "Zadajte id procesu, ktoremu chcete nastavit prioritu\n");
+            printf("\n->  ");
+            char proces[2];
+            gets(proces);
+            char *command = strtok(proces, " ");
+
+            for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
+                char str[2];
+                sprintf(str, "%d", i);
+                zoznamVlakien.vlakna[i].priority = 0; //vynulovat ostatne
+                if(strcmp(command, str) == 0) {
+                    zoznamVlakien.vlakna[i].priority = 1; //nastavenie noveho
+                }
+            }
         } else if (strcmp(input, "historia") == 0) {
             printLog();
         } else if (strcmp(input, "pause") == 0) {
@@ -44,7 +60,6 @@ int main()
             for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
                 char str[2];
                 sprintf(str, "%d", i);
-                printf( "str: %s, command: %s, i: %d\n", str, command, i);
                 if(strcmp(command, str) == 0) {
                     pauseDownload(&zoznamVlakien.vlakna[i]);
                 }
@@ -60,7 +75,6 @@ int main()
             for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
                 char str[2];
                 sprintf(str, "%d", i);
-                printf( "str: %s, command: %s, i: %d\n", str, command, i);
                 if(strcmp(command, str) == 0) {
                     resumeDownload(&zoznamVlakien.vlakna[i]);
                 }
@@ -77,7 +91,6 @@ int main()
             for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
                 char str[2];
                 sprintf(str, "%d", i);
-                printf( "str: %s, command: %s, i: %d\n", str, command, i);
                 if(strcmp(command, str) == 0) {
                     stopDownload(zoznamVlakien.vlakna[i]);
                 }
