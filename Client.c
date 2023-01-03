@@ -7,6 +7,11 @@
 
 int main()
 {
+    pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+    pthread_cond_t stop = PTHREAD_COND_INITIALIZER;
+    pthread_cond_t start = PTHREAD_COND_INITIALIZER;
+
+    MUTEX mutex = {&mut, &stop, &start, false};
 
     ZOZNAM_VLAKIEN zoznamVlakien;
     zoznamVlakien.pocetPrvkov = 0;
@@ -23,7 +28,7 @@ int main()
             URL_SLICED urlSliced;
             urlSliced = downloadInput();
             int sock = serverConnection(&urlSliced);
-            zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov] = download(&urlSliced, sock, zoznamVlakien.pocetPrvkov);
+            zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov] = download(&urlSliced, sock, zoznamVlakien.pocetPrvkov, &mutex);
             zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov].planningTime = imputPlanningTime();
             zoznamVlakien.pocetPrvkov++;
 
@@ -217,7 +222,6 @@ int imputPlanningTime() {
     } else {
         printf( "Zadali ste nespravy vstup ... budeme pokracovat v stahovani \n");
     }
-    printf( "Download sa zacne o %d:%d:%d \n", atoi(hodina), atoi(minuta), atoi(sekunda));
 
     return (atoi(sekunda) + (atoi(minuta) * 60) + (atoi(hodina) * 60 * 60));
 }

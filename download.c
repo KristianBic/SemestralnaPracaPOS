@@ -14,8 +14,9 @@
 
 
 
-CLIENT_INFO download(URL_SLICED *slicedURL, int socked, int id) {
+CLIENT_INFO download(URL_SLICED *slicedURL, int socked, int id, MUTEX* mut) {
     CLIENT_INFO clientA;
+    clientA.mutex = mut;
     clientA.slicedURL = slicedURL;
     clientA.sockfd = socked;
     clientA.localFile = slicedURL->fileName;
@@ -206,6 +207,17 @@ void* http_download_file(CLIENT_INFO *client)
 
     close(client->sockfd);
     printf("\nStahovanie dokoncene: %s. Pthread: %s CLOSED!\n", client->localFile, client->slicedURL->domain);
-    write_to_log(client->localFile, (char *)client->slicedURL->domain, client->downloadedSize, getSizeUnit(client->downloadedSize), 0);
+
+    while (client->mutex->logging == true) {
+        printf("Downlovd musi cakat \n");
+        pthread_cond_wait(client->mutex->start, client->mutex->mut);
+    }
+    client->mutex->logging = true;
+    write_to_log(client->localFile, (char *)client->slicedURL->domain, client->downloadedSize, getSizeUnit(client->downloadedSize), 0, client->mutex->start, client->mutex->mut);
+    client->mutex->logging = false;
+
+    pthread_cond_signal(client->mutex->stop);
+    pthread_mutex_unlock(client->mutex->mut);
+
     pthread_exit(NULL);
 }

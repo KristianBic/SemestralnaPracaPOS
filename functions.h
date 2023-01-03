@@ -1,6 +1,9 @@
 
 #ifndef SEMESTRALNAPRACAPOS_FUNCTIONS_H
 #define SEMESTRALNAPRACAPOS_FUNCTIONS_H
+
+#include <stdbool.h>
+
 typedef struct
 {
     const char* domain;
@@ -15,7 +18,7 @@ int contentLength(char *length);
 void downloadHTMLfromHTTP(int sockfd);
 
 char *getCurrentTime();
-void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time);
+void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time,  pthread_cond_t * start,  pthread_mutex_t* mut);
 char *getCurrentDirectory();
 char *getSizeUnit(double size);
 void printLog();

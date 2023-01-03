@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <time.h>
 #include <unistd.h>
+#include <pthread.h>
 #include "functions.h"
 
 URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
@@ -150,8 +151,9 @@ char *getSizeUnit(double size)
     return unit;
 }
 
-void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time)
+void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time,   pthread_cond_t * start,  pthread_mutex_t* mut)
 {
+
     FILE *log_file;
     // Open log file in append mode
     FILE *fp = fopen("log_file.txt", "a");
@@ -174,6 +176,11 @@ void write_to_log(char *filename, char *url, int size, char *sizeUnit, double el
 
     // Close log file
     fclose(fp);
+    sleep(20);
+
+    pthread_cond_signal(start);
+    pthread_mutex_unlock(mut);
+
 }
 
 char *getCurrentDirectory()
