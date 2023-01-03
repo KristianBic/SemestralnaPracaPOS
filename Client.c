@@ -139,8 +139,9 @@ int main()
 }
 
 void printInformations(ZOZNAM_VLAKIEN *ptr) {
-    for (int i = 0; i < ptr->pocetPrvkov; ++i) {
-        printf("Download s id %d ma: Domain %s a prioritu %d\n",  ptr->vlakna[i].id, ptr->vlakna[i].slicedURL->domain, ptr->vlakna[i].priority);
+    for (int i = 0; i < ptr->pocetPrvkov; ++i)
+    {
+        printf("Download ID: %d ma domenu: %s a prioritu %d\n", ptr->vlakna[i].id, ptr->vlakna[i].slicedURL->domain, ptr->vlakna[i].priority);
     }
 }
 

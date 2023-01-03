@@ -140,7 +140,7 @@ void downloadHTTP(CLIENT_INFO* client) {
     // Extract content length from HTTP response
     char *length = strtok(recv_data, "\r\n");
     client->fileSize = contentLength(length);
-    printf("Content length of file is: %d\n", client->fileSize);
+    printf("Content length of file is: %s\n", getSizeUnit(client->fileSize));
 
     if (client->fileSize < 0)
     {
