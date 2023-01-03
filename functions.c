@@ -176,7 +176,7 @@ void write_to_log(char *filename, char *url, int size, char *sizeUnit, double el
 
     // Close log file
     fclose(fp);
-    sleep(20);
+    //sleep(20);
 
     pthread_cond_signal(start);
     pthread_mutex_unlock(mut);
