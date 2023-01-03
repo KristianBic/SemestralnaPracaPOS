@@ -176,11 +176,16 @@ URL_SLICED downloadInput() {
     printf( "------------------------------------------------------------------------------------------- \n");
 
 
+
     printf("Zadajte nazov noveho suboru. Pri nezadani nazvu sa nazov zachova totozny ako na serveri.\n");
     printf("\n->  ");
     gets(localFileConsole);
-    if (strcmp(localFileConsole, "") != 0) {
-        urlSliced.fileName = localFileConsole;
+    char* localFileName;
+    localFileName = localFileConsole;
+    if (strcmp(localFileConsole, "") == 0) {
+        printf( "Lokalny subor ostava nezmeneny");
+    } else {
+        urlSliced.fileName = strcpy((char*)malloc(strlen(localFileConsole) + 1), localFileConsole);
     }
     printf( "Zadany nazov lokalneho suboru je: %s \n", urlSliced.fileName);
     printf( "------------------------------------------------------------------------------------------- \n");

@@ -18,7 +18,7 @@ CLIENT_INFO download(URL_SLICED *slicedURL, int socked, int id) {
     CLIENT_INFO clientA;
     clientA.slicedURL = slicedURL;
     clientA.sockfd = socked;
-    clientA.localFile = DEFAULT_HTTP_LOCALFILE;
+    clientA.localFile = slicedURL->fileName;
     clientA.username = "";
     clientA.password = "";
     clientA.fileSize = 0;
