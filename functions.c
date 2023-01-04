@@ -28,8 +28,8 @@ URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
         slicedURL->domain = strtok(site_port_path, ":");
         slicedURL->domain = strtok(site_port_path, "/");
     }
-    char* URL = strcpy((char*)malloc(strlen(url) + 1), url);
-    slicedURL->port = strstr(URL + 6, ":");
+    slicedURL->fullUrl = strcpy((char*)malloc(strlen(url) + 1), url);
+    slicedURL->port = strstr(slicedURL->fullUrl + 6, ":");
     char* port_path = 0;
     char* port_path_copy = 0;
     if (slicedURL->port && isdigit(*(port_path = (char*)slicedURL->port + 1)))
@@ -47,7 +47,7 @@ URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
         slicedURL->domainPath = port_path_copy + strlen(slicedURL->port ? slicedURL->port : "");
     else
     {
-        char* path = strstr(URL + 8, "/");
+        char* path = strstr(slicedURL->fullUrl + 8, "/");
         slicedURL->domainPath = path ? path : "/";
     }
     int r = strcmp(slicedURL->protocol, slicedURL->domain) == 0;
@@ -60,8 +60,6 @@ URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
     if (fileName && *(fileName))
         slicedURL->fileName = fileName;
 
-    //free(URL);
-    //free(port_path_copy);
     return slicedURL;
 
 }
@@ -179,7 +177,7 @@ void write_to_log(char *filename, char *url, int size, char *sizeUnit, double el
     // Close log file
     fclose(fp);
     //sleep(20);
-
+    free(time_str);
     pthread_cond_signal(start);
     pthread_mutex_unlock(mut);
 

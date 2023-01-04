@@ -228,6 +228,7 @@ void *http_download_file(CLIENT_INFO *client)
             }
            // printf("] (Time: %.2f seconds)", elapsed);
             fflush(stdout);
+            free(time_str);
         }
     }
     // Close local file

@@ -6,6 +6,7 @@
 
 typedef struct
 {
+    const char* fullUrl;
     const char* domain;
     const char* domainPath;
     const char* protocol;

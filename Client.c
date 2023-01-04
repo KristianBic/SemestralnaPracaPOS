@@ -159,6 +159,18 @@ int main()
     for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
         free((void *) zoznamVlakien.vlakna[i].slicedURL->domain);
         free((void *) zoznamVlakien.vlakna[i].slicedURL->protocol);
+        free((void *) zoznamVlakien.vlakna[i].slicedURL->fileName);
+        free((void *) zoznamVlakien.vlakna[i].slicedURL->domainPath);
+        free((void *) zoznamVlakien.vlakna[i].slicedURL->port);
+        free((void *) zoznamVlakien.vlakna[i].slicedURL->fullUrl);
+
+        free((void *) zoznamVlakien.vlakna[i].localFile);
+
+        pthread_mutex_destroy(zoznamVlakien.vlakna[i].mutex->mut);
+        pthread_cond_destroy(zoznamVlakien.vlakna[i].mutex->stop);
+        pthread_cond_destroy(zoznamVlakien.vlakna[i].mutex->start);
+
+
     }
 
     return 0;
@@ -184,14 +196,15 @@ URL_SLICED downloadInput() {
     char urlConsole[100];
     char localFileConsole[100];
     char localDirectory[100];
+    char urlConsoleDefault[100] = "http://xcal1.vodafone.co.uk/5MB.zip";
 
     printf( "------------------------------------------------------------------------------------------- \n");
     printf("Zadajte link(URL) pre stiahnutie suboru. Napr. http://xcal1.vodafone.co.uk/5MB.zip\n");
     printf("\n->  ");
     gets(urlConsole);
     if(strcmp(urlConsole, "") == 0) {
-        split_url(&urlSliced, DEFAULT_HTTP_URL);
-        printf( "Zadana adresa je: %s \n", DEFAULT_HTTP_URL);
+        split_url(&urlSliced, urlConsoleDefault);
+        printf( "Zadana adresa je: %s \n", urlConsoleDefault);
     } else {
         split_url(&urlSliced, urlConsole);
         printf( "Zadana adresa je: %s \n", urlConsole);
