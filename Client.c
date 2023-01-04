@@ -48,9 +48,9 @@ int main()
             for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
                 char str[2];
                 sprintf(str, "%d", i);
-                zoznamVlakien.vlakna[i].priority = 0; //vynulovat ostatne
+                zoznamVlakien.vlakna[i].priority = 1; //vynulovat ostatne
                 if(strcmp(command, str) == 0) {
-                    zoznamVlakien.vlakna[i].priority = 1; //nastavenie noveho
+                    zoznamVlakien.vlakna[i].priority = 0; //nastavenie noveho
                 }
             }
         } else if (strcmp(input, "historia") == 0) {

@@ -1,23 +1,17 @@
-TODO: Dohodnut sa ze ci chceme zadavat nazov noveho suboru alebo nehame rovnake ako sme stiahli.
-      (treba rozmyslat aj tak ze ked sa bude napr. 5 suborov stahovat s rovnakym menom)
-      Pripadne mozme mat na vyber.
-      Zatial to funguje ze v configu to nastavime ... ale je to aj v Struct. urlSliced pod nazvom "fileName".
-
-TODO: Chceme vobec nieco davat do argumentov ? Nebolo by lepsie to dat aby si to client zapisal po vyzvani.
 
 TODO: FTP, FTPS
 
-TODO: input validation (Client.c)
-
-TODO: zistit ze ci davame stahovat aj v priebehu programu alebo iba na zaciatku a potom s nimi iba pracujeme
-
 TODO: dokumentacne komentare
-
-TODO: Opravit aby sa stahovanie 5MB suboru neostalo na 99%.
-      Treba skusit stiahnut cez inu tranku, moze byt zly subor co stahujeme.
 
 TODO: treba aj port zadavat ?
 
-TODO: setPriority zadavame na zaciatku alebo behom programu
+TODO: spravovanie lokanych adresarov
 
-TODO: pri pauze sa stopuju vsetky subory na stahovanie alebo napr iba jeden
+TODO: mem. leaky
+
+TODO: ukoncit stahovanio
+
+TODO: prerobit cely interface
+
+TODO: prerobit njake metody z netu
+

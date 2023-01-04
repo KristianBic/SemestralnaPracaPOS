@@ -195,10 +195,10 @@ void *http_download_file(CLIENT_INFO *client)
             switch (client->priority)
             {
                 case 1:
-                    speedLimit = 0.0; //Unlimited
+                    speedLimit = 3.0; // drzi opkolo 2.0 - 2.08 MB/s
                     break;
                 default:
-                    speedLimit = 3.0; // drzi opkolo 2.0 - 2.08 MB/s
+                    speedLimit = 0.0; //Unlimited
                     break;
             }
             // riesenie  1
