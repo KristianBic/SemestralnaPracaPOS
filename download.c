@@ -56,16 +56,13 @@ void pauseDownload(CLIENT_INFO* client) {
     client->downloading = false;
     client->pause = true;
     client->resume = false;
-    printf("Stahovanie sa pozastavilo\n");
 }
 
-void stopDownload(CLIENT_INFO client) {
-    client.downloading = false;
-    client.stop = true;
-    client.pause = true;
+void stopDownload(CLIENT_INFO* client) {
+    client->downloading = false;
+    client->stop = true;
+    client->pause = true;
     printf("Stahovanie sa zruselo\n");
-
-    deleteFile(client.slicedURL->fileName);
 }
 
 void resumeDownload(CLIENT_INFO* client) {
@@ -182,8 +179,9 @@ void *http_download_file(CLIENT_INFO *client)
     {
         if (client->stop)
         {
-            printf("\nStahovanie sa ukoncilo! STOPPED: %s\n", client->localFile);
+            printf("\nStahovanie sa ukoncilo a subor sa vymazal! STOPPED: %s\n", client->localFile);
             fclose(fp);
+            deleteFile(client->slicedURL->fileName);
             close(client->sockfd);
             pthread_exit(NULL);
         }

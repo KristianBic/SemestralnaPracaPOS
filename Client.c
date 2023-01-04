@@ -111,7 +111,7 @@ int main()
                 char str[2];
                 sprintf(str, "%d", i);
                 if(strcmp(command, str) == 0) {
-                    stopDownload(zoznamVlakien.vlakna[i]);
+                    stopDownload(&zoznamVlakien.vlakna[i]);
                 }
             }
         }else if (strcmp(input, "deleteFile") == 0) {
@@ -131,9 +131,8 @@ int main()
             gets(proces);
             char *command = strtok(proces, " ");
             if (strcmp(command, "") != 0) {
-                deleteFile(command);
+                deleteDirectory(command);
             }
-
 
         } else if (strcmp(input, "pauseALL") == 0) {
             for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
@@ -145,7 +144,7 @@ int main()
             }
         }else if (strcmp(input, "stopALL") == 0) {
             for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
-                stopDownload(zoznamVlakien.vlakna[i]);
+                stopDownload(&zoznamVlakien.vlakna[i]);
             }
         }else if (strcmp(input, "exit") == 0) {
             break;
