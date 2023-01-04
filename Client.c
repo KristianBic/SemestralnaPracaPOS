@@ -147,6 +147,11 @@ int main()
                 stopDownload(&zoznamVlakien.vlakna[i]);
             }
         }else if (strcmp(input, "exit") == 0) {
+            for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
+                if(zoznamVlakien.vlakna[i].downloading == true) {
+                    stopDownload(&zoznamVlakien.vlakna[i]);
+                }
+            }
             break;
         } else {
             printf( "Zadali ste nespravny tvar. Skuste znovu. \n");
