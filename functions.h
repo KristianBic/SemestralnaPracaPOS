@@ -24,4 +24,11 @@ char *getSizeUnit(double size);
 void printLog();
 void clear_log();
 
+int createDirectory(const char* path);
+int directoryExists(const char* path);
+void printDirectoryContents(const char *directory);
+void printDirectory(const char *directory);
+void deleteFile(const char *filename);
+void deleteDirectory(const char *directory);
+
 #endif //SEMESTRALNAPRACAPOS_FUNCTIONS_H

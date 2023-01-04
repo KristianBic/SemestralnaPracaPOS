@@ -64,7 +64,8 @@ void stopDownload(CLIENT_INFO client) {
     client.stop = true;
     client.pause = true;
     printf("Stahovanie sa zruselo\n");
-    //pridat tu nieco
+
+    deleteFile(client.slicedURL->fileName);
 }
 
 void resumeDownload(CLIENT_INFO* client) {
@@ -179,7 +180,13 @@ void *http_download_file(CLIENT_INFO *client)
 
     while ((bytes_read = recv(client->sockfd, buffer, BUFFER_SIZE, 0)) > 0)
     {
-
+        if (client->stop)
+        {
+            printf("\nStahovanie sa ukoncilo! STOPPED: %s\n", client->localFile);
+            fclose(fp);
+            close(client->sockfd);
+            pthread_exit(NULL);
+        }
         if (client->pause)
         {
             sleep(1);
@@ -216,12 +223,12 @@ void *http_download_file(CLIENT_INFO *client)
             int bar_length = 20;
             int progress = (int)(percentage * bar_length);
             char *time_str = getCurrentTime();
-            printf("\r%s Downloading... %.2f/%.2f M bytes (%.2f%%) received (%.2f MB/s) [", time_str, (double)client->downloadedSize / (1024 * 1024), (double)client->fileSize / (1024 * 1024), percentage * 100, currentSpeed / 1024.0 / 1024.0);
+            //printf("\r%s Downloading... %.2f/%.2f M bytes (%.2f%%) received (%.2f MB/s) [", time_str, (double)client->downloadedSize / (1024 * 1024), (double)client->fileSize / (1024 * 1024), percentage * 100, currentSpeed / 1024.0 / 1024.0);
             for (int i = 0; i < bar_length; i++)
             {
-                printf("%c", i <= progress ? '#' : ' ');
+                //printf("%c", i <= progress ? '#' : ' ');
             }
-            printf("] (Time: %.2f seconds)", elapsed);
+           // printf("] (Time: %.2f seconds)", elapsed);
             fflush(stdout);
         }
     }

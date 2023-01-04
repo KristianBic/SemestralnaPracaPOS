@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <dirent.h>
 
 
 int main()
@@ -113,6 +114,27 @@ int main()
                     stopDownload(zoznamVlakien.vlakna[i]);
                 }
             }
+        }else if (strcmp(input, "deleteFile") == 0) {
+            printInformations(&zoznamVlakien);
+            printf( "Zadajte nazov suboru\n");
+            printf("\n->  ");
+            char proces[2];
+            gets(proces);
+            char *command = strtok(proces, " ");
+            deleteFile(command);
+
+        }else if (strcmp(input, "deleteDir") == 0) {
+            printInformations(&zoznamVlakien);
+            printf( "Zadajte nazov suboru\n");
+            printf("\n->  ");
+            char proces[2];
+            gets(proces);
+            char *command = strtok(proces, " ");
+            if (strcmp(command, "") != 0) {
+                deleteFile(command);
+            }
+
+
         } else if (strcmp(input, "pauseALL") == 0) {
             for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
                 pauseDownload(&zoznamVlakien.vlakna[i]);
@@ -162,6 +184,7 @@ URL_SLICED downloadInput() {
     URL_SLICED urlSliced;
     char urlConsole[100];
     char localFileConsole[100];
+    char localDirectory[100];
 
     printf( "------------------------------------------------------------------------------------------- \n");
     printf("Zadajte link(URL) pre stiahnutie suboru. Napr. http://xcal1.vodafone.co.uk/5MB.zip\n");
@@ -180,22 +203,45 @@ URL_SLICED downloadInput() {
     }
     printf( "------------------------------------------------------------------------------------------- \n");
 
-
-
     printf("Zadajte nazov noveho suboru. Pri nezadani nazvu sa nazov zachova totozny ako na serveri.\n");
     printf("\n->  ");
     gets(localFileConsole);
     char* localFileName;
     localFileName = localFileConsole;
     if (strcmp(localFileConsole, "") == 0) {
-        printf( "Lokalny subor ostava nezmeneny");
+        printf( "Lokalny subor ostava nezmeneny\n");
     } else {
         urlSliced.fileName = strcpy((char*)malloc(strlen(localFileConsole) + 1), localFileConsole);
     }
     printf( "Zadany nazov lokalneho suboru je: %s \n", urlSliced.fileName);
     printf( "------------------------------------------------------------------------------------------- \n");
 
+    printDirectory(getCurrentDirectory());
 
+    printf("Zadajte nazov adresara. Pri nezadani nazvu sa nazov zachova povodny adresar.\n");
+    printf("\n->  ");
+    gets(localDirectory);
+    if (strcmp(localDirectory, "") == 0)
+    {
+        printf( "Adresar ostava nezmeneny\n");
+    }
+    else if (!directoryExists(localDirectory))
+    {
+        createDirectory(localDirectory);
+        const char * currentParh = urlSliced.domainPath;
+        strcat(localDirectory, "");
+        strcat(localDirectory, currentParh);
+        urlSliced.domainPath = localDirectory;
+    } else if (directoryExists(localDirectory)) {
+        chdir(localDirectory);
+        const char * currentParh = urlSliced.domainPath;
+        strcat(localDirectory, "");
+        strcat(localDirectory, currentParh);
+        urlSliced.domainPath = localDirectory;
+    }
+
+    printf( "------------------------------------------------------------------------------------------- \n");
+    printf("Current directory: %s\n", getCurrentDirectory());
     printf("Protocol: %s\nSite: %s\nPort: %s\nPath: %s\nFileName: %s\n\n",
            urlSliced.protocol, urlSliced.domain, urlSliced.port, urlSliced.domainPath, urlSliced.fileName);
     printf( "------------------------------------------------------------------------------------------- \n");

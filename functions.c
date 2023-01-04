@@ -6,6 +6,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <sys/stat.h>
+#include <dirent.h>
 #include "functions.h"
 
 URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
@@ -201,4 +203,121 @@ char *getCurrentTime()
     char *time_str = malloc(sizeof(char) * 20);
     strftime(time_str, 20, "%Y-%m-%d %H:%M:%S", tm);
     return time_str;
+}
+
+int createDirectory(const char* path)
+{
+    // Create directory
+    int status = mkdir(path, 0777);
+    if (status < 0)
+    {
+        perror("Error: mkdir");
+        return -1;
+    }
+    chdir(path);
+    return 0;
+}
+
+int directoryExists(const char* path)
+{
+    struct stat sb;
+    return stat(path, &sb) == 0 && S_ISDIR(sb.st_mode);
+}
+
+void printDirectoryContents(const char *directory)
+{
+    DIR *dir = opendir(directory);
+    if (dir == NULL)
+    {
+        perror("Error opening directory");
+        return;
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        printf("%s\n", entry->d_name);
+    }
+
+    closedir(dir);
+}
+
+void printDirectory(const char *directory)
+{
+    DIR *dir = opendir(directory);
+    if (dir == NULL)
+    {
+        perror("Error opening directory");
+        return;
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (entry->d_type == DT_DIR)
+        {
+            printf("%s\t", entry->d_name);
+        }
+    }
+    printf("\n");
+    closedir(dir);
+}
+
+
+void deleteFile(const char *filename)
+{
+    // Use unlink() function to delete file
+    if (unlink(filename) != 0)
+    {
+        perror("Error deleting file");
+        return;
+    }
+}
+
+
+void deleteDirectory(const char *directory)
+{
+    DIR *dir = opendir(directory);
+    if (dir == NULL)
+    {
+        perror("Error opening directory");
+        return;
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        // Skip current and parent directories
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+        {
+            continue;
+        }
+
+        char path[1024];
+        snprintf(path, sizeof(path), "%s/%s", directory, entry->d_name);
+
+        if (entry->d_type == DT_DIR)
+        {
+            // Recursively delete subdirectory
+            deleteDirectory(path);
+        }
+        else
+        {
+            // Delete file
+            if (unlink(path) != 0)
+            {
+                perror("Error deleting file");
+                closedir(dir);
+                return;
+            }
+        }
+    }
+
+    // Close directory and delete it
+    closedir(dir);
+    if (rmdir(directory) != 0)
+    {
+        perror("Error deleting directory");
+        return;
+    }
 }
