@@ -71,21 +71,24 @@ void resumeDownload(CLIENT_INFO* client) {
     client->downloading = true;
     client->resume = true;
     client->pause = false;
+
     printf("Stahovanie sa znovu spustilo\n");
-    if (client->stop) {
-        return;
-    }
-    if (strcmp(client->slicedURL->protocol, "http") == 0) {
-        http_download_file(client);
-    } else if (strcmp(client->slicedURL->protocol, "https") == 0) {
-        http_download_file(client);
-        //https();
-    } else if (strcmp(client->slicedURL->protocol, "ftp") == 0) {
-        http_download_file(client);
-        //ftp();
-    } else if (strcmp(client->slicedURL->protocol, "ftps") == 0) {
-        //ftps();
-    }
+    /*
+   if (client->stop) {
+       return;
+   }
+   if (strcmp(client->slicedURL->protocol, "http") == 0) {
+       http_download_file(client);
+   } else if (strcmp(client->slicedURL->protocol, "https") == 0) {
+       http_download_file(client);
+       //https();
+   } else if (strcmp(client->slicedURL->protocol, "ftp") == 0) {
+       http_download_file(client);
+       //ftp();
+   } else if (strcmp(client->slicedURL->protocol, "ftps") == 0) {
+       //ftps();
+   }
+    */
 }
 
 void downloadHTTP(CLIENT_INFO* client) {
@@ -167,6 +170,7 @@ void* http_download_file(CLIENT_INFO *client)
 
     // Read file data from HTTP response
     char buffer[BUFFER_SIZE];
+    double elapsed;
     int bytes_read;
     struct timeval start, end;
     gettimeofday(&start, NULL);
@@ -174,31 +178,49 @@ void* http_download_file(CLIENT_INFO *client)
         if(client->pause) {
             sleep(1);
         } else {
-        fwrite(buffer, 1, bytes_read, fp);
-        client->downloadedSize += bytes_read;
-
-        // Update download status
-        gettimeofday(&end, NULL);
-        double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6;
-        double speed = client->downloadedSize / elapsed;
-        double percentage = (double) client->downloadedSize / client->fileSize;
-
-        // Display progress bar
-        int bar_length = 50;
-        int progress = (int)(percentage * bar_length);
-        char time_str[20];
-        time_t t = time(NULL);
-        strftime(time_str, 20, "%d.%m.%Y %H:%M:%S", localtime(&t));
-        //printf("\r%s Downloading... %.2f/%.2f M bytes (%.2f%%) received (%.2f MB/s) [", time_str, (double)bytes_received/(1024*1024), (double)content_length/(1024*1024), percentage * 100, speed / 1024.0 / 1024.0);
-        for (int i = 0; i < bar_length; i++) {
-            if (i <= progress) {
-                //printf("#");
-            } else {
-                //printf(" ");
+            // Update download status
+            gettimeofday(&end, NULL);
+            elapsed = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6;
+            double speed = client->downloadedSize / elapsed;
+            // Set speed limit based on priority
+            double speedLimit;
+            if (client->priority == 1)
+            {
+                speedLimit = 5.0; // 5 MB/s
             }
-        }
-        //printf("] (Time elapsed: %.2f seconds)",elapsed);
-        fflush(stdout);
+            else if (client->priority == 2)
+            {
+                speedLimit = 3.0; // 3 MB/s
+            }
+            else if (client->priority == 3)
+            {
+                speedLimit = 0.1; // 2 MB/s
+            }
+            else
+            {
+                speedLimit = 1.0; //  UNLIMITED
+            }
+            double dataDownloaded = client->downloadedSize / 1024.0 / 1024.0; // bytes_read is in bytes, convert to MB
+            if (speed > speedLimit)
+            {
+                // Calculate time required to bring speed below limit
+                double timeRequired = dataDownloaded / (speed - speedLimit);
+                usleep(timeRequired * 1000000);
+            }
+
+            fwrite(buffer, 1, bytes_read, fp);
+            client->downloadedSize += bytes_read;
+
+            double percentage = (double)client->downloadedSize / client->fileSize;
+            sleep(.3);
+            // Display progress bar
+            int bar_length = 50;
+            int progress = (int)(percentage * bar_length);
+            char *time_str = getCurrentTime();
+            printf("\r%s Downloading... %.2f/%.2f M bytes (%.2f%%) received (%.2f MB/s) [", time_str, (double)client->downloadedSize / (1024 * 1024), (double)client->fileSize / (1024 * 1024), percentage * 100, speed / 1024.0 / 1024.0);
+
+            //printf("] (Time: %.2f seconds)", elapsed);
+            fflush(stdout);
         }
     }
     // Close local file
@@ -213,7 +235,7 @@ void* http_download_file(CLIENT_INFO *client)
         pthread_cond_wait(client->mutex->start, client->mutex->mut);
     }
     client->mutex->logging = true;
-    write_to_log(client->localFile, (char *)client->slicedURL->domain, client->downloadedSize, getSizeUnit(client->downloadedSize), 0, client->mutex->start, client->mutex->mut);
+    write_to_log(client->localFile, (char *)client->slicedURL->domain, client->downloadedSize, getSizeUnit(client->downloadedSize), elapsed, client->mutex->start, client->mutex->mut);
     client->mutex->logging = false;
 
     pthread_cond_signal(client->mutex->stop);
