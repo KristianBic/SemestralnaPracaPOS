@@ -157,69 +157,71 @@ void downloadHTTP(CLIENT_INFO* client) {
     close(fd);
 }
 
-void* http_download_file(CLIENT_INFO *client)
+void *http_download_file(CLIENT_INFO *client)
 {
     printf("Zacina sa stahovanie\n");
 
     // Open local file for writing
-    FILE *fp = fopen(client->localFile, "w");
-    if (fp == NULL) {
+    FILE *fp = fopen(client->localFile, "w+");
+    if (fp == NULL)
+    {
         perror("Error opening local file for writing");
         pthread_exit(NULL);
     }
 
     // Read file data from HTTP response
     char buffer[BUFFER_SIZE];
-    double elapsed;
     int bytes_read;
     struct timeval start, end;
+    double elapsed;
     gettimeofday(&start, NULL);
-    while ((bytes_read = recv(client->sockfd, buffer, BUFFER_SIZE, 0)) > 0) {
-        if(client->pause) {
+    double speedLimit;
+
+    while ((bytes_read = recv(client->sockfd, buffer, BUFFER_SIZE, 0)) > 0)
+    {
+
+        if (client->pause)
+        {
             sleep(1);
-        } else {
-            // Update download status
+        }
+        else
+        {
             gettimeofday(&end, NULL);
             elapsed = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6;
-            double speed = client->downloadedSize / elapsed;
-            // Set speed limit based on priority
-            double speedLimit;
-            if (client->priority == 1)
+            double currentSpeed = (double)client->downloadedSize / elapsed;
+            double percentage = (double)client->downloadedSize / client->fileSize;
+
+            // Set initial speed limit based on priority
+            switch (client->priority)
             {
-                speedLimit = 5.0; // 5 MB/s
+                case 1:
+                    speedLimit = 0.0; //Unlimited
+                    break;
+                default:
+                    speedLimit = 3.0; // drzi opkolo 2.0 - 2.08 MB/s
+                    break;
             }
-            else if (client->priority == 2)
+            // riesenie  1
+            if (currentSpeed > speedLimit)
             {
-                speedLimit = 3.0; // 3 MB/s
+                double delay = (((double)bytes_read / (1024 * 1024)) / speedLimit) * 1000000.0;
+                usleep(delay);
             }
-            else if (client->priority == 3)
-            {
-                speedLimit = 0.1; // 2 MB/s
-            }
-            else
-            {
-                speedLimit = 1.0; //  UNLIMITED
-            }
-            double dataDownloaded = client->downloadedSize / 1024.0 / 1024.0; // bytes_read is in bytes, convert to MB
-            if (speed > speedLimit)
-            {
-                // Calculate time required to bring speed below limit
-                double timeRequired = dataDownloaded / (speed - speedLimit);
-                usleep(timeRequired * 1000000);
-            }
+            // ine riesenia mi moc nesli alebo to uplne zasekli, rozmyslal som ze tam nechame len ten default ako nejake velke cislo a ked sa zmeni priorita
+            // tak ostatne budu nar limitovane na 3.0 cize okolo 1MB/s
 
             fwrite(buffer, 1, bytes_read, fp);
             client->downloadedSize += bytes_read;
-
-            double percentage = (double)client->downloadedSize / client->fileSize;
-            sleep(.3);
             // Display progress bar
-            int bar_length = 50;
+            int bar_length = 20;
             int progress = (int)(percentage * bar_length);
             char *time_str = getCurrentTime();
-            printf("\r%s Downloading... %.2f/%.2f M bytes (%.2f%%) received (%.2f MB/s) [", time_str, (double)client->downloadedSize / (1024 * 1024), (double)client->fileSize / (1024 * 1024), percentage * 100, speed / 1024.0 / 1024.0);
-
-            //printf("] (Time: %.2f seconds)", elapsed);
+            printf("\r%s Downloading... %.2f/%.2f M bytes (%.2f%%) received (%.2f MB/s) [", time_str, (double)client->downloadedSize / (1024 * 1024), (double)client->fileSize / (1024 * 1024), percentage * 100, currentSpeed / 1024.0 / 1024.0);
+            for (int i = 0; i < bar_length; i++)
+            {
+                printf("%c", i <= progress ? '#' : ' ');
+            }
+            printf("] (Time: %.2f seconds)", elapsed);
             fflush(stdout);
         }
     }
@@ -230,8 +232,9 @@ void* http_download_file(CLIENT_INFO *client)
     close(client->sockfd);
     printf("\nStahovanie dokoncene: %s. Pthread: %s CLOSED!\n", client->localFile, client->slicedURL->domain);
 
-    while (client->mutex->logging == true) {
-        printf("Downlovd musi cakat \n");
+    while (client->mutex->logging == true)
+    {
+        printf("Download musi cakat \n");
         pthread_cond_wait(client->mutex->start, client->mutex->mut);
     }
     client->mutex->logging = true;
