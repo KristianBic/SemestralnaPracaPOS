@@ -12,6 +12,8 @@ typedef struct
     const char* protocol;
     const char* port;
     char* fileName;
+    const char* localDomainPath;
+    char* localFileName;
 } URL_SLICED;
 
 URL_SLICED* split_url(URL_SLICED* info, const char* url);

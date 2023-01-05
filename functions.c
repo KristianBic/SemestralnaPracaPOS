@@ -69,8 +69,11 @@ URL_SLICED *split_url(URL_SLICED *slicedURL, const char *url)
         slicedURL->protocol = "tcp";
 
     char *fileName = strrchr(slicedURL->domainPath, '/') + 1;
-    if (fileName && *(fileName))
-        slicedURL->fileName = fileName;
+    if (fileName && *(fileName)) {
+        slicedURL->fileName = strcpy((char *)malloc(strlen(fileName) + 1), fileName);
+        slicedURL->localFileName = strcpy((char *)malloc(strlen(fileName) + 1), fileName);
+    }
+    slicedURL->localDomainPath = strcpy((char *)malloc(strlen(slicedURL->domainPath) + 1), slicedURL->domainPath);
 
     return slicedURL;
 }

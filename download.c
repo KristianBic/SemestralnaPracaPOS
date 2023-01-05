@@ -24,7 +24,6 @@ CLIENT_INFO download(URL_SLICED *slicedURL, int socked, int id, MUTEX *mut)
   clientA.mutex = mut;
   clientA.slicedURL = slicedURL;
   clientA.sockfd = socked;
-  clientA.localFile = slicedURL->fileName;
   clientA.username = "";
   clientA.password = "";
   clientA.fileSize = 0;
@@ -108,13 +107,13 @@ void downloadHTTP(CLIENT_INFO *client)
 {
 
   int fd;
-  if ((fd = open(client->localFile, O_WRONLY | O_CREAT, 0666)) == -1)
+  if ((fd = open(client->slicedURL->fileName, O_WRONLY | O_CREAT, 0666)) == -1)
   {
     printf("Error. Subor sa neda otvorit\n");
     return;
   }
 
-  printf("Stahovanie suboru: %s\n", client->localFile);
+  printf("Stahovanie suboru: %s\n", client->slicedURL->fileName);
 
   char recv_data[BUFFER_SIZE];
   char send_data[BUFFER_SIZE];
@@ -158,7 +157,7 @@ void *http_download_file(CLIENT_INFO *client)
 {
   printf("Zacina sa stahovanie\n");
 
-  FILE *fp = fopen(client->localFile, "w+");
+  FILE *fp = fopen(client->slicedURL->localFileName, "w+");
   if (fp == NULL)
   {
     perror("Error: pri otvoreni lokalneho suboru na stahovanie");
@@ -176,7 +175,7 @@ void *http_download_file(CLIENT_INFO *client)
   {
     if (client->stop)
     {
-      printf("\nStahovanie sa ukoncilo a subor sa vymazal! STOPPED: %s\n", client->localFile);
+      printf("\nStahovanie sa ukoncilo a subor sa vymazal! STOPPED: %s\n", client->slicedURL->localFileName);
       fclose(fp);
       deleteFile(client->slicedURL->fileName);
       close(client->sockfd);
@@ -228,7 +227,7 @@ void *http_download_file(CLIENT_INFO *client)
   }
   fclose(fp);
   close(client->sockfd);
-  printf("\nStahovanie dokoncene: %s. Pthread: %s CLOSED!\n", client->localFile, client->slicedURL->domain);
+  printf("\nStahovanie dokoncene: %s. Pthread: %s CLOSED!\n", client->slicedURL->localFileName, client->slicedURL->domain);
 
   while (client->mutex->logging == true)
   {
@@ -236,7 +235,7 @@ void *http_download_file(CLIENT_INFO *client)
     pthread_cond_wait(client->mutex->start, client->mutex->mut);
   }
   client->mutex->logging = true;
-  write_to_log(client->localFile, (char *)client->slicedURL->domain, client->downloadedSize, getSizeUnit(client->downloadedSize), elapsed, client->mutex->start, client->mutex->mut);
+  write_to_log(client->slicedURL->fileName, (char *)client->slicedURL->domain, client->downloadedSize, getSizeUnit(client->downloadedSize), elapsed, client->mutex->start, client->mutex->mut);
   client->mutex->logging = false;
 
   pthread_cond_signal(client->mutex->stop);

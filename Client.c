@@ -207,6 +207,10 @@ int main()
     free((void *)zoznamVlakien.vlakna[i].slicedURL->protocol);
     free((void *)zoznamVlakien.vlakna[i].slicedURL->fullUrl);
 
+      free((void *)zoznamVlakien.vlakna[i].slicedURL->fileName);
+      free((void *)zoznamVlakien.vlakna[i].slicedURL->localFileName);
+      free((void *)zoznamVlakien.vlakna[i].slicedURL->localDomainPath);
+
     pthread_mutex_destroy(zoznamVlakien.vlakna[i].mutex->mut);
     pthread_cond_destroy(zoznamVlakien.vlakna[i].mutex->stop);
     pthread_cond_destroy(zoznamVlakien.vlakna[i].mutex->start);
@@ -226,7 +230,7 @@ void printInformations(ZOZNAM_VLAKIEN *ptr)
     double percentage = (double)ptr->vlakna[i].downloadedSize / ptr->vlakna[i].fileSize;
     int bar_length = 20;
     int progress = (int)(percentage * bar_length);
-    printf("\r[%s] ID: %d, Priorita: %d, Stahovanie suboru: '%s', Prijate: %.2f/%.2f MB, Rychlost: (%.2f MB/s) [", getCurrentTime(), ptr->vlakna[i].id, ptr->vlakna[i].priority, ptr->vlakna[i].localFile, (double)ptr->vlakna[i].downloadedSize / (1024 * 1024), (double)ptr->vlakna[i].fileSize / (1024 * 1024),  ptr->vlakna[i].currentSpeed / 1024.0 / 1024.0);
+    printf("\r[%s] ID: %d, Priorita: %d, Stahovanie suboru: '%s', Prijate: %.2f/%.2f MB, Rychlost: (%.2f MB/s) [", getCurrentTime(), ptr->vlakna[i].id, ptr->vlakna[i].priority, ptr->vlakna[i].slicedURL->localFileName, (double)ptr->vlakna[i].downloadedSize / (1024 * 1024), (double)ptr->vlakna[i].fileSize / (1024 * 1024),  ptr->vlakna[i].currentSpeed / 1024.0 / 1024.0);
       for (int i = 0; i < bar_length; i++)
       {
            printf("%c", i <= progress ? '#' : ' ');
@@ -284,30 +288,30 @@ URL_SLICED downloadInput()
   localFileName = localFileConsole;
   if (strcmp(localFileConsole, "") != 0)
   {
-      urlSliced.fileName = strcpy((char *)malloc(strlen(localFileConsole) + 1), localFileConsole);
+      urlSliced.localFileName = strcpy((char *)malloc(strlen(localFileConsole) + 1), localFileConsole);
   }
-/*
-    if(access(urlSliced.fileName, F_OK) == 0) { //if file exists
-        printf("Subor s rovnakym nazvom uz existuje. Chcete z neho spravit kopiu? Pokial nie tak sa subor prepise. (a/n): ");
+
+    if(access(urlSliced.localFileName, F_OK) == 0) { //if file exists
+        printf("Subor s rovnakym nazvom uz existuje. Chcete z neho spravit kopiu? Pokial nie tak sa subor prepise. (a/n): \n");
         char answer[100];
         gets(answer);
         if(strcmp(answer, "a") == 0) {
-            //prepiseme index
-            get_unique_filename(urlSliced.fileName);
-
+            get_unique_filename(urlSliced.localFileName);
         } else if(strcmp(answer, "n") == 0) {
             //nerobime nic
         } else {
             printf("Error: Zly vstup.\n");
         }
     }
-*/
-  printf("Zadany nazov lokalneho suboru je: %s \n", urlSliced.fileName);
+
+    printf("Zadany nazov serv suboru je: %s \n", urlSliced.fileName);
+  printf("Zadany nazov lokalneho suboru je: %s \n", urlSliced.localFileName);
   printf("------------------------------------------------------------------------------------------- \n");
 
   printf("Existujuce adresare: ");
   printDirectory(getCurrentDirectory());
 
+  //treba prerobit lebo do downloadu musime davat dobry path aby sa to stiahlo z url
   printf("Zadajte nazov adresara alebo stlacte enter a nazov sa zachova podla povodneho adresara.\n");
   gets(localDirectory);
   if (strcmp(localDirectory, "") == 0)
@@ -317,24 +321,23 @@ URL_SLICED downloadInput()
   else if (!directoryExists(localDirectory))
   {
     createDirectory(localDirectory);
-    const char *currentParh = urlSliced.domainPath;
-    strcat(localDirectory, "");
-    strcat(localDirectory, currentParh);
-    urlSliced.domainPath = localDirectory;
+    strcat(localDirectory, "/");
+    strcat(localDirectory, urlSliced.localFileName);
+    urlSliced.localDomainPath = localDirectory;
   }
   else if (directoryExists(localDirectory))
   {
     chdir(localDirectory);
-    const char *currentParh = urlSliced.domainPath;
-    strcat(localDirectory, "");
-    strcat(localDirectory, currentParh);
-    urlSliced.domainPath = localDirectory;
+    strcat(localDirectory, "/");
+    strcat(localDirectory, urlSliced.localFileName);
+    urlSliced.localDomainPath = localDirectory;
   }
+
 
   printf("------------------------------------------------------------------------------------------- \n");
   printf("Aktualny adresar: %s\n", getCurrentDirectory());
-  printf("Protocol: %s\nSite: %s\nPort: %s\nPath: %s\nFileName: %s\n",
-         urlSliced.protocol, urlSliced.domain, urlSliced.port, urlSliced.domainPath, urlSliced.fileName);
+  printf("Protocol: %s\nSite: %s\nPort: %s\nPath: %s\nFileName: %s\nLocal Path: %s\nLocal FileName: %s\n",
+         urlSliced.protocol, urlSliced.domain, urlSliced.port, urlSliced.domainPath, urlSliced.fileName, urlSliced.localDomainPath, urlSliced.localFileName);
   printf("------------------------------------------------------------------------------------------- \n");
 
   return urlSliced;
@@ -345,7 +348,7 @@ int imputPlanningTime()
   char cas[100];
   char hodiny[100], minuty[100], sekundy[100];
 
-  printf("Chcete naplanovať cas, kedy sa mm stahovanie zacat? (a/n) \n");
+  printf("Chcete naplanovať cas, kedy sa mm stahovanie zacat? (a/n)\n");
   gets(cas);
   if (strcmp(cas, "a") == 0)
   {
