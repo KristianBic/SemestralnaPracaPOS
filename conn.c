@@ -9,7 +9,12 @@
 
 #include "conn.h"
 
+/* serverConnection() je funkcia, ktorá sa používa na vytvorenie sieťovej konektivity s vzdialeným serverom.
+Funkcia prijíma ako parameter ukazovateľ na štruktúru URL_SLICED, ktorá obsahuje informácie o protokole, domene, porte a ceste k súboru na vzdialenom servere.
 
+Funkcia vytvorí socket pomocou funkcie socket() a následne sa pokúsi vytvoriť konektivitu s vzdialeným serverom pomocou funkcie connect().
+Ak sa podarí vytvoriť konektivitu, funkcia vráti soketový deskriptor pre túto konektivitu.
+Ak sa konektivita nepodarí vytvoriť, funkcia vypíše chybovú hlášku a ukončí program.*/
 int serverConnection(URL_SLICED* slicedURL) {
     struct sockaddr_in server;
     struct hostent *he;
