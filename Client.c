@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <dirent.h>
 
 
 /* Táto funkcia slúži ako hlavný program a obsahuje interaktívny menu, v ktorom užívateľ môže zadať rôzne príkazy.
@@ -35,15 +34,19 @@ int main()
     gets(input);
     if (strcmp(input, "download") == 0)
     {
+
       URL_SLICED urlSliced;
       urlSliced = downloadInput();
-      int sock = serverConnection(&urlSliced);
-      zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov] = download(&urlSliced, sock, zoznamVlakien.pocetPrvkov, &mutex);
-      zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov].planningTime = imputPlanningTime();
-      zoznamVlakien.pocetPrvkov++;
 
-      pthread_create(&threadDownload, NULL, downloadThread, &zoznamVlakien);
-      pthread_detach(threadDownload);
+      int sock = serverConnection(&urlSliced);
+
+       zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov] = download(&urlSliced, sock, zoznamVlakien.pocetPrvkov, &mutex);
+       zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov].planningTime = imputPlanningTime();
+       zoznamVlakien.pocetPrvkov++; //chyba ?
+
+       pthread_create(&threadDownload, NULL, downloadThread, &zoznamVlakien);
+       pthread_detach(threadDownload);
+
     }
     else if (strcmp(input, "information") == 0)
     {
@@ -207,21 +210,18 @@ int main()
   }
   printf("------------------------------------------------------------------------------------------- \n");
 
+
   for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i)
   {
     free((void *)zoznamVlakien.vlakna[i].slicedURL->domain);
     free((void *)zoznamVlakien.vlakna[i].slicedURL->protocol);
-    free((void *)zoznamVlakien.vlakna[i].slicedURL->fileName);
-    free((void *)zoznamVlakien.vlakna[i].slicedURL->domainPath);
-    free((void *)zoznamVlakien.vlakna[i].slicedURL->port);
     free((void *)zoznamVlakien.vlakna[i].slicedURL->fullUrl);
-
-    free((void *)zoznamVlakien.vlakna[i].localFile);
 
     pthread_mutex_destroy(zoznamVlakien.vlakna[i].mutex->mut);
     pthread_cond_destroy(zoznamVlakien.vlakna[i].mutex->stop);
     pthread_cond_destroy(zoznamVlakien.vlakna[i].mutex->start);
   }
+
   return 0;
 }
 
@@ -274,7 +274,7 @@ URL_SLICED downloadInput()
   }
   if (atoi(urlSliced.port) > 65536 || atoi(urlSliced.port) < 0)
   {
-    printf("Neplatne cislo portu!");
+    printf("Neplatne cislo portu!\n");
     exit(1);
   }
   printf("------------------------------------------------------------------------------------------- \n");
