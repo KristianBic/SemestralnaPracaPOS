@@ -23,7 +23,7 @@ int serverConnection(URL_SLICED* slicedURL) {
     int sockfd;
 
     if((he = gethostbyname(slicedURL->domain)) == NULL) {
-        herror("Error resolving hostname");
+        herror("Error: spracovanie domeny");
         exit(-1);
     }
 
@@ -44,13 +44,14 @@ int serverConnection(URL_SLICED* slicedURL) {
     }
 
     ipaddr = inet_ntoa(*addr_list[0]);
-    printf("Connecting to %s [%s]...\n\n", slicedURL->domain, ipaddr);
+    printf("Pripaja sa na server %s [%s]...\n", slicedURL->domain, ipaddr);
     if(connect(sockfd, (struct sockaddr *)&server,sizeof(struct sockaddr_in)) == -1) { //create connection
-        perror("Connection failed");
+        perror("Pripojenie zlyhalo");
         close(sockfd);
         exit(-1);
     }
 
-    printf("Successful Connection. \n");
+    printf("Pripojenie prebehlo uspesne \n");
+    printf("------------------------------------------------------------------------------------------- \n");
     return sockfd;
 }

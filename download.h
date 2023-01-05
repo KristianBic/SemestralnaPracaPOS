@@ -18,6 +18,7 @@ typedef struct clientInformations{
     char* localFile;
     char* username;
     char* password;
+    double currentSpeed;
     int fileSize;
     int downloadedSize;
     int priority;

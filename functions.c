@@ -93,27 +93,11 @@ int contentLength(char *length)
     return content_length;
 }
 
-/*Funkcia downloadHTMLfromHTTP slúži na stiahnutie HTML obsahu z HTTP servera pomocou HTTP GET požiadavky.
- Funkcia vyžaduje soket pre komunikáciu s HTTP serverom ako argument*/
-void downloadHTMLfromHTTP(int sockfd)
-{
-    char buf[2056];
-    int byte_count;
-
-    char *header = "GET /index.html HTTP/1.1\r\nHost: www.example.com\r\n\r\n";
-    send(sockfd, header, strlen(header), 0);
-    printf("GET odoslaný...\n");
-    // all right ! now that we're connected, we can receive some data!
-    byte_count = recv(sockfd, buf, sizeof(buf), 0);
-    printf("recv() získal %d bajtov dát v buffri.\n", byte_count);
-    printf("%.*s", byte_count, buf); // <-- predaj printf() skutočnú veľkosť dát
-}
 
 /* Táto funkcia slúži na vymazanie obsahu zo súboru "log_file.txt".
 Ak súbor neexistuje alebo nie je možné ho otvoriť na zápis, funkcia vypíše chybové hlásenie*/
 void clear_log()
 {
-    // pthread_mutex_lock(&log_lock);
     FILE *fp = fopen("log_file.txt", "w");
     if (fp == NULL)
     {
@@ -123,14 +107,12 @@ void clear_log()
     {
         fclose(fp);
     }
-    // pthread_mutex_unlock(&log_lock);
 }
 
 /*Táto funkcia slúži na výpis obsahu súboru "log_file.txt".
 Ak súbor neexistuje alebo nie je možné ho otvoriť na čítanie, funkcia vypíše chybové hlásenie.*/
 void printLog()
 {
-    // pthread_mutex_lock(&log_lock);
     FILE *fp = fopen("log_file.txt", "r");
     if (fp == NULL)
     {
@@ -145,7 +127,6 @@ void printLog()
         }
         fclose(fp);
     }
-    // pthread_mutex_unlock(&log_lock);
 }
 
 /* Táto funkcia slúži na prevod veľkosti súboru na ľudovo čitateľnú jednotku (napríklad B, KB, MB alebo GB).
@@ -179,30 +160,21 @@ Na konci funkcie sa súbor zavrie a uvoľní sa alokovaná pamäť pre aktuálny
 Funkcia tiež vyšle signál pre ďalšie vlákno a odomkne zámok mutexu.*/
 void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time, pthread_cond_t *start, pthread_mutex_t *mut)
 {
-
     FILE *log_file;
-    // Open log file in append mode
     FILE *fp = fopen("log_file.txt", "a");
     if (fp == NULL)
     {
         perror("Error: nemohol otvorit subor log_file na zapis");
         return;
     }
-    // Get current time
     char *time_str = getCurrentTime();
-    // Get current working directory
     char *cwd = getCurrentDirectory();
     char *size_units = getSizeUnit(size);
 
-    // Write log entry to file
-    fprintf(fp, "[%s] Stiahnutý súbor '%s' (%s za %.2lf sekúnd) z %s do %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
+    fprintf(fp, "[%s] Stiahnuty subor '%s' (%s za %.2lf sekund) z %s do %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
+    printf("[%s] Stiahnuty subor '%s' (%s za %.2lf sekund) z %s do %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
 
-    // Print log entry to console
-    printf("[%s] Stiahnutý súbor '%s' (%s za %.2lf sekúnd) z %s do %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
-
-    // Close log file
     fclose(fp);
-    // sleep(20);
     free(time_str);
     pthread_cond_signal(start);
     pthread_mutex_unlock(mut);
@@ -238,11 +210,10 @@ char *getCurrentTime()
 Funkcia vráti 0 ak bol adresár úspešne vytvorený, inak vráti -1.*/
 int createDirectory(const char *path)
 {
-    // Create directory
     int status = mkdir(path, 0777);
     if (status < 0)
     {
-        perror("Error: mkdir");
+        perror("Error: vytvaranie adresara - mkdir");
         return -1;
     }
     chdir(path);
@@ -303,7 +274,6 @@ void printDirectory(const char *directory)
 Funkcia vráti hodnotu 0 ak bol súbor úspešne vymazaný, inak vráti chybové hlásenie.*/
 void deleteFile(const char *filename)
 {
-    // Use unlink() function to delete file
     if (unlink(filename) != 0)
     {
         perror("Error: pri mazani suboru");
@@ -329,7 +299,6 @@ void deleteDirectory(const char *directory)
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL)
     {
-        // Skip current and parent directories
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
         {
             continue;
@@ -339,12 +308,10 @@ void deleteDirectory(const char *directory)
         snprintf(path, sizeof(path), "%s/%s", directory, entry->d_name);
         if (entry->d_type == DT_DIR)
         {
-            // Recursively delete subdirectory
             deleteDirectory(path);
         }
         else
         {
-            // Delete file
             if (unlink(path) != 0)
             {
                 perror("Error: pri vymazavani suboru.");
@@ -353,11 +320,41 @@ void deleteDirectory(const char *directory)
             }
         }
     }
-    // Close directory and delete it
     closedir(dir);
     if (rmdir(directory) != 0)
     {
         perror("Error: pri mazani adresara.");
         return;
+    }
+}
+
+void  get_unique_filename(char *filename) {
+    char *dot_pos = strrchr(filename, '.');
+
+    if (dot_pos == NULL) {
+        int index = 1;
+        char new_filename[256];
+        while (true) {
+            sprintf(new_filename, "%s_(%d)", filename, index);
+            if (access(new_filename, F_OK) == -1) {
+                strcpy(filename, new_filename);
+                break;
+            }
+            index++;
+        }
+    } else {
+
+        int index = 1;
+        char new_filename[256];
+        char *file_extension = dot_pos + 1;
+        *dot_pos = '\0';
+        while (true) {
+            sprintf(new_filename, "%s_(%d).%s", filename, index, file_extension);
+            if (access(new_filename, F_OK) == -1) {
+                strcpy(filename, new_filename);
+                break;
+            }
+            index++;
+        }
     }
 }

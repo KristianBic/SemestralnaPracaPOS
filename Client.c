@@ -29,34 +29,30 @@ int main()
   printf("------------------------------------------------------------------------------------------- \n");
   while (1)
   {
-    printf("Zadajte jeden z nasledujucich prikazov: download ; historia ; exit \n");
-    printf("\n->  ");
+    printf("Zadajte jeden z nasledujucich prikazov:  \n");
+    printf("'download', 'historia', 'information', 'exit', 'pause', 'pauseALL', 'resume', 'resumeALL', 'stop', 'stopALL', 'deleteFile', 'deleteDir' \n");
     gets(input);
     if (strcmp(input, "download") == 0)
     {
-
       URL_SLICED urlSliced;
       urlSliced = downloadInput();
-
       int sock = serverConnection(&urlSliced);
 
        zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov] = download(&urlSliced, sock, zoznamVlakien.pocetPrvkov, &mutex);
        zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov].planningTime = imputPlanningTime();
-       zoznamVlakien.pocetPrvkov++; //chyba ?
+       zoznamVlakien.pocetPrvkov++;
 
        pthread_create(&threadDownload, NULL, downloadThread, &zoznamVlakien);
        pthread_detach(threadDownload);
-
     }
     else if (strcmp(input, "information") == 0)
     {
       printInformations(&zoznamVlakien);
     }
-    else if (strcmp(input, "priority") == 0)
+    else if (strcmp(input, "priorita") == 0)
     {
       printInformations(&zoznamVlakien);
       printf("Zadajte id procesu, ktoremu chcete nastavit prioritu\n");
-      printf("\n->  ");
       char proces[2];
       gets(proces);
       char *command = strtok(proces, " ");
@@ -74,7 +70,6 @@ int main()
     else if (strcmp(input, "historia") == 0)
     {
       printf("Zadajte co chcete robit - show , clear\n");
-      printf("\n->  ");
       char input[100];
       gets(input);
       if (strcmp(input, "show") == 0)
@@ -94,7 +89,6 @@ int main()
     {
       printInformations(&zoznamVlakien);
       printf("Zadajte id procesu\n");
-      printf("\n->  ");
       char proces[2];
       gets(proces);
       char *command = strtok(proces, " ");
@@ -113,7 +107,6 @@ int main()
     {
       printInformations(&zoznamVlakien);
       printf("Zadajte id procesu\n");
-      printf("\n->  ");
       char proces[2];
       gets(proces);
       char *command = strtok(proces, " ");
@@ -132,7 +125,6 @@ int main()
     {
       printInformations(&zoznamVlakien);
       printf("Zadajte id procesu\n");
-      printf("\n->  ");
       char proces[2];
       gets(proces);
       char *command = strtok(proces, " ");
@@ -151,7 +143,6 @@ int main()
     {
       printInformations(&zoznamVlakien);
       printf("Zadajte nazov suboru\n");
-      printf("\n->  ");
       char proces[2];
       gets(proces);
       char *command = strtok(proces, " ");
@@ -161,7 +152,6 @@ int main()
     {
       printInformations(&zoznamVlakien);
       printf("Zadajte nazov suboru\n");
-      printf("\n->  ");
       char proces[2];
       gets(proces);
       char *command = strtok(proces, " ");
@@ -230,10 +220,20 @@ int main()
  o jednotlivých vláknach. Pre každé vlákno sa vypíšu jeho ID, doména a priorita*/
 void printInformations(ZOZNAM_VLAKIEN *ptr)
 {
+    printf("------------------------------------------------------------------------------------------- \n");
   for (int i = 0; i < ptr->pocetPrvkov; ++i)
   {
-    printf("Download ID: %d ma domenu: %s a prioritu %d\n", ptr->vlakna[i].id, ptr->vlakna[i].slicedURL->domain, ptr->vlakna[i].priority);
+    double percentage = (double)ptr->vlakna[i].downloadedSize / ptr->vlakna[i].fileSize;
+    int bar_length = 20;
+    int progress = (int)(percentage * bar_length);
+    printf("\r[%s] ID: %d, Priorita: %d, Stahovanie suboru: '%s', Prijate: %.2f/%.2f MB, Rychlost: (%.2f MB/s) [", getCurrentTime(), ptr->vlakna[i].id, ptr->vlakna[i].priority, ptr->vlakna[i].localFile, (double)ptr->vlakna[i].downloadedSize / (1024 * 1024), (double)ptr->vlakna[i].fileSize / (1024 * 1024),  ptr->vlakna[i].currentSpeed / 1024.0 / 1024.0);
+      for (int i = 0; i < bar_length; i++)
+      {
+           printf("%c", i <= progress ? '#' : ' ');
+      }
+       printf("] \n");
   }
+    printf("------------------------------------------------------------------------------------------- \n");
 }
 
 /* Funkcia downloadThread() slúži ako vlákno pre stiahnutie súboru. Vstupom je ukazovateľ na štruktúru ZOZNAM_VLAKIEN,
@@ -244,6 +244,7 @@ void *downloadThread(void *vlaknaPar)
 {
   ZOZNAM_VLAKIEN *zoznamVlakien = vlaknaPar;
   sleep(zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1].planningTime);
+  printf("------------------------------------------------------------------------------------------- \n");
   startDownload(&zoznamVlakien->vlakna[zoznamVlakien->pocetPrvkov - 1]);
 }
 
@@ -259,8 +260,7 @@ URL_SLICED downloadInput()
   char urlConsoleDefault[100] = "http://xcal1.vodafone.co.uk/5MB.zip";
 
   printf("------------------------------------------------------------------------------------------- \n");
-  printf("Zadajte link(URL) pre stiahnutie suboru. Napr. http://xcal1.vodafone.co.uk/5MB.zip\n");
-  printf("\n->  ");
+  printf("Zadajte link(URL) alebo stlacte enter pre stiahnutie suboru. DEFAULT: http://xcal1.vodafone.co.uk/5MB.zip\n");
   gets(urlConsole);
   if (strcmp(urlConsole, "") == 0)
   {
@@ -278,26 +278,37 @@ URL_SLICED downloadInput()
     exit(1);
   }
   printf("------------------------------------------------------------------------------------------- \n");
-  printf("Zadajte nazov noveho suboru. Pri nezadani nazvu sa nazov zachova totozny ako na serveri.\n");
-  printf("\n->  ");
+  printf("Zadajte nazov noveho suboru alebo stlacte enter a nazov sa zachova totozny s URL\n");
   gets(localFileConsole);
   char *localFileName;
   localFileName = localFileConsole;
-  if (strcmp(localFileConsole, "") == 0)
+  if (strcmp(localFileConsole, "") != 0)
   {
-    printf("Lokalny subor ostava nezmeneny\n");
+      urlSliced.fileName = strcpy((char *)malloc(strlen(localFileConsole) + 1), localFileConsole);
   }
-  else
-  {
-    urlSliced.fileName = strcpy((char *)malloc(strlen(localFileConsole) + 1), localFileConsole);
-  }
+/*
+    if(access(urlSliced.fileName, F_OK) == 0) { //if file exists
+        printf("Subor s rovnakym nazvom uz existuje. Chcete z neho spravit kopiu? Pokial nie tak sa subor prepise. (a/n): ");
+        char answer[100];
+        gets(answer);
+        if(strcmp(answer, "a") == 0) {
+            //prepiseme index
+            get_unique_filename(urlSliced.fileName);
+
+        } else if(strcmp(answer, "n") == 0) {
+            //nerobime nic
+        } else {
+            printf("Error: Zly vstup.\n");
+        }
+    }
+*/
   printf("Zadany nazov lokalneho suboru je: %s \n", urlSliced.fileName);
   printf("------------------------------------------------------------------------------------------- \n");
 
+  printf("Existujuce adresare: ");
   printDirectory(getCurrentDirectory());
 
-  printf("Zadajte nazov adresara. Pri nezadani nazvu sa nazov zachova povodny adresar.\n");
-  printf("\n->  ");
+  printf("Zadajte nazov adresara alebo stlacte enter a nazov sa zachova podla povodneho adresara.\n");
   gets(localDirectory);
   if (strcmp(localDirectory, "") == 0)
   {
@@ -321,8 +332,8 @@ URL_SLICED downloadInput()
   }
 
   printf("------------------------------------------------------------------------------------------- \n");
-  printf("Current directory: %s\n", getCurrentDirectory());
-  printf("Protocol: %s\nSite: %s\nPort: %s\nPath: %s\nFileName: %s\n\n",
+  printf("Aktualny adresar: %s\n", getCurrentDirectory());
+  printf("Protocol: %s\nSite: %s\nPort: %s\nPath: %s\nFileName: %s\n",
          urlSliced.protocol, urlSliced.domain, urlSliced.port, urlSliced.domainPath, urlSliced.fileName);
   printf("------------------------------------------------------------------------------------------- \n");
 
@@ -333,7 +344,8 @@ int imputPlanningTime()
 {
   char cas[100];
   char hodiny[100], minuty[100], sekundy[100];
-  printf("Chcete naplánovať čas, kedy sa má sťahovanie začať? (a/n) \n");
+
+  printf("Chcete naplanovať cas, kedy sa mm stahovanie zacat? (a/n) \n");
   gets(cas);
   if (strcmp(cas, "a") == 0)
   {
@@ -343,13 +355,15 @@ int imputPlanningTime()
     gets(minuty);
     printf("Zadajte pocet sekund \n");
     gets(sekundy);
+    printf("Stahovanie sa uskutocni o %d:%d:%d \n", atoi(hodiny), atoi(minuty), atoi(sekundy));
   }
-  else if (strcmp(cas, "n") != 0)
+  else if (strcmp(cas, "n") == 0)
   {
   }
   else
   {
-    printf("Zadali ste nespravy vstup ... budeme pokracovat v stahovani \n");
+    printf("Zadali ste nespravy vstup. Budeme pokracovat v stahovani bez nacasovania. \n");
   }
+  printf("------------------------------------------------------------------------------------------- \n");
   return (atoi(sekundy) + (atoi(minuty) * 60) + (atoi(hodiny) * 60 * 60));
 }

@@ -16,7 +16,6 @@ typedef struct
 
 URL_SLICED* split_url(URL_SLICED* info, const char* url);
 int contentLength(char *length);
-void downloadHTMLfromHTTP(int sockfd);
 
 char *getCurrentTime();
 void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time,  pthread_cond_t * start,  pthread_mutex_t* mut);
@@ -31,5 +30,5 @@ void printDirectoryContents(const char *directory);
 void printDirectory(const char *directory);
 void deleteFile(const char *filename);
 void deleteDirectory(const char *directory);
-
+void get_unique_filename(char *filename);
 #endif //SEMESTRALNAPRACAPOS_FUNCTIONS_H
