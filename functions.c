@@ -10,32 +10,44 @@
 #include <dirent.h>
 #include "functions.h"
 
-URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
+/*Tento kód je zodpovedný za rozdelenie URL adresy na jednotlivé časti, ako napríklad protokol, doménu, port a cestu k súboru.
+Tiež obsahuje funkcie na stiahnutie HTML obsahu z HTTP servera.
+Prvá funkcia split_url rozdeľuje URL adresu na jednotlivé časti a ukladá ich do štruktúry URL_SLICED.
+Štruktúra má nasledujúce polia:
+
+protocol - protokol použitý v URL adrese, napríklad "http"
+domain - doména URL adresy, napríklad "www.example.com"
+port - port použitý v URL adrese
+fullUrl - celé URL adresy
+domainPath - cesta k súboru na serveri, napríklad "/index.html"
+fileName - názov súboru na serveri, napríklad "index.html"*/
+URL_SLICED *split_url(URL_SLICED *slicedURL, const char *url)
+{
     if (!slicedURL || !url)
         return NULL;
-    slicedURL->protocol = strtok(strcpy((char*)malloc(strlen(url) + 1), url), "://");
+    slicedURL->protocol = strtok(strcpy((char *)malloc(strlen(url) + 1), url), "://");
     slicedURL->domain = strstr(url, "://");
     if (slicedURL->domain)
     {
         slicedURL->domain += 3;
-        char* site_port_path = strcpy((char*)calloc(1, strlen(slicedURL->domain) + 1), slicedURL->domain);
+        char *site_port_path = strcpy((char *)calloc(1, strlen(slicedURL->domain) + 1), slicedURL->domain);
         slicedURL->domain = strtok(site_port_path, ":");
         slicedURL->domain = strtok(site_port_path, "/");
     }
     else
     {
-        char* site_port_path = strcpy((char*)calloc(1, strlen(url) + 1), url);
+        char *site_port_path = strcpy((char *)calloc(1, strlen(url) + 1), url);
         slicedURL->domain = strtok(site_port_path, ":");
         slicedURL->domain = strtok(site_port_path, "/");
     }
-    slicedURL->fullUrl = strcpy((char*)malloc(strlen(url) + 1), url);
+    slicedURL->fullUrl = strcpy((char *)malloc(strlen(url) + 1), url);
     slicedURL->port = strstr(slicedURL->fullUrl + 6, ":");
-    char* port_path = 0;
-    char* port_path_copy = 0;
-    if (slicedURL->port && isdigit(*(port_path = (char*)slicedURL->port + 1)))
+    char *port_path = 0;
+    char *port_path_copy = 0;
+    if (slicedURL->port && isdigit(*(port_path = (char *)slicedURL->port + 1)))
     {
-        port_path_copy = strcpy((char*)malloc(strlen(port_path) + 1), port_path);
-        char * r = strtok(port_path, "/");
+        port_path_copy = strcpy((char *)malloc(strlen(port_path) + 1), port_path);
+        char *r = strtok(port_path, "/");
         if (r)
             slicedURL->port = r;
         else
@@ -47,7 +59,7 @@ URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
         slicedURL->domainPath = port_path_copy + strlen(slicedURL->port ? slicedURL->port : "");
     else
     {
-        char* path = strstr(slicedURL->fullUrl + 8, "/");
+        char *path = strstr(slicedURL->fullUrl + 8, "/");
         slicedURL->domainPath = path ? path : "/";
     }
     int r = strcmp(slicedURL->protocol, slicedURL->domain) == 0;
@@ -61,10 +73,12 @@ URL_SLICED* split_url(URL_SLICED* slicedURL, const char* url){
         slicedURL->fileName = fileName;
 
     return slicedURL;
-
 }
 
-int contentLength(char *length) {
+/* Funkcia contentLength zisťuje veľkosť obsahu (v bajtoch) na základe hlavičky HTTP odpovede.
+Funkcia vráti hodnotu -1, ak sa v hlavičke nenachádza informácia o veľkosti obsahu.*/
+int contentLength(char *length)
+{
     int content_length = -1;
 
     while (length != NULL)
@@ -79,20 +93,24 @@ int contentLength(char *length) {
     return content_length;
 }
 
-void downloadHTMLfromHTTP(int sockfd) {
+/*Funkcia downloadHTMLfromHTTP slúži na stiahnutie HTML obsahu z HTTP servera pomocou HTTP GET požiadavky.
+ Funkcia vyžaduje soket pre komunikáciu s HTTP serverom ako argument*/
+void downloadHTMLfromHTTP(int sockfd)
+{
     char buf[2056];
     int byte_count;
 
     char *header = "GET /index.html HTTP/1.1\r\nHost: www.example.com\r\n\r\n";
-    send(sockfd,header,strlen(header),0);
-    printf("GET Sent...\n");
-    //all right ! now that we're connected, we can receive some data!
-    byte_count = recv(sockfd,buf,sizeof(buf),0);
-    printf("recv()'d %d bytes of data in buf\n",byte_count);
-    printf("%.*s",byte_count,buf); // <-- give printf() the actual data size
+    send(sockfd, header, strlen(header), 0);
+    printf("GET odoslaný...\n");
+    // all right ! now that we're connected, we can receive some data!
+    byte_count = recv(sockfd, buf, sizeof(buf), 0);
+    printf("recv() získal %d bajtov dát v buffri.\n", byte_count);
+    printf("%.*s", byte_count, buf); // <-- predaj printf() skutočnú veľkosť dát
 }
 
-// Clear log file
+/* Táto funkcia slúži na vymazanie obsahu zo súboru "log_file.txt".
+Ak súbor neexistuje alebo nie je možné ho otvoriť na zápis, funkcia vypíše chybové hlásenie*/
 void clear_log()
 {
     // pthread_mutex_lock(&log_lock);
@@ -108,7 +126,8 @@ void clear_log()
     // pthread_mutex_unlock(&log_lock);
 }
 
-// Display log file
+/*Táto funkcia slúži na výpis obsahu súboru "log_file.txt".
+Ak súbor neexistuje alebo nie je možné ho otvoriť na čítanie, funkcia vypíše chybové hlásenie.*/
 void printLog()
 {
     // pthread_mutex_lock(&log_lock);
@@ -129,6 +148,8 @@ void printLog()
     // pthread_mutex_unlock(&log_lock);
 }
 
+/* Táto funkcia slúži na prevod veľkosti súboru na ľudovo čitateľnú jednotku (napríklad B, KB, MB alebo GB).
+Funkcia vráti ukazovateľ na reťazec s jednotkou ako návratovú hodnotu.*/
 char *getSizeUnit(double size)
 {
     static char unit[4];
@@ -151,7 +172,12 @@ char *getSizeUnit(double size)
     return unit;
 }
 
-void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time,   pthread_cond_t * start,  pthread_mutex_t* mut)
+/* Funkcia write_to_log slúži na zápis informácií o sťahovanom súbore do log súboru a tiež na výpis týchto informácií na konzolu.
+Funkcia otvorí súbor "log_file.txt" v režime pridávania (append), získa aktuálny čas, aktuálny pracovný adresár,
+a jednotku pre veľkosť súboru. Potom zapíše záznam do súboru a vypíše ho aj na konzolu.
+Na konci funkcie sa súbor zavrie a uvoľní sa alokovaná pamäť pre aktuálny čas.
+Funkcia tiež vyšle signál pre ďalšie vlákno a odomkne zámok mutexu.*/
+void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time, pthread_cond_t *start, pthread_mutex_t *mut)
 {
 
     FILE *log_file;
@@ -159,7 +185,7 @@ void write_to_log(char *filename, char *url, int size, char *sizeUnit, double el
     FILE *fp = fopen("log_file.txt", "a");
     if (fp == NULL)
     {
-        perror("Error opening log file");
+        perror("Error: nemohol otvorit subor log_file na zapis");
         return;
     }
     // Get current time
@@ -169,20 +195,22 @@ void write_to_log(char *filename, char *url, int size, char *sizeUnit, double el
     char *size_units = getSizeUnit(size);
 
     // Write log entry to file
-    fprintf(fp, "[%s] Downloaded file '%s' (%s in %.2lf seconds) from %s to %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
+    fprintf(fp, "[%s] Stiahnutý súbor '%s' (%s za %.2lf sekúnd) z %s do %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
 
     // Print log entry to console
-    printf("[%s] Downloaded file '%s' (%s in %.2lf seconds) from %s to %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
+    printf("[%s] Stiahnutý súbor '%s' (%s za %.2lf sekúnd) z %s do %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
 
     // Close log file
     fclose(fp);
-    //sleep(20);
+    // sleep(20);
     free(time_str);
     pthread_cond_signal(start);
     pthread_mutex_unlock(mut);
-
 }
 
+/* Táto funkcia slúži na získanie aktuálneho pracovného adresára.
+Funkcia vráti ukazovateľ na reťazec s názvom adresára ako návratovú hodnotu.
+Ak sa nepodarí získať aktuálny adresár, funkcia vypíše chybové hlásenie.*/
 char *getCurrentDirectory()
 {
     static char buffer[1024];
@@ -194,6 +222,9 @@ char *getCurrentDirectory()
     return buffer;
 }
 
+/* Táto funkcia slúži na získanie aktuálneho dátumu a času v formáte "YYYY-MM-DD HH:MM:SS".
+Funkcia vráti ukazovateľ na reťazec s aktuálnym dátumom a časom ako návratovú hodnotu.
+Funkcia vyžaduje alokáciu pamäte pre reťazec s aktuálnym dátumom a časom, takže je potrebné pamäť po použití uvoľniť.*/
 char *getCurrentTime()
 {
     time_t t = time(NULL);
@@ -203,7 +234,9 @@ char *getCurrentTime()
     return time_str;
 }
 
-int createDirectory(const char* path)
+/* Funkcia createDirectory vytvorí nový adresár s názvom path.
+Funkcia vráti 0 ak bol adresár úspešne vytvorený, inak vráti -1.*/
+int createDirectory(const char *path)
 {
     // Create directory
     int status = mkdir(path, 0777);
@@ -216,18 +249,22 @@ int createDirectory(const char* path)
     return 0;
 }
 
-int directoryExists(const char* path)
+/* Funkcia directoryExists skontroluje, či adresár s názvom path existuje.
+Vráti hodnotu true ak adresár existuje, false ak adresár neexistuje.*/
+int directoryExists(const char *path)
 {
     struct stat sb;
     return stat(path, &sb) == 0 && S_ISDIR(sb.st_mode);
 }
 
+/* Funkcia printDirectoryContents vypíše obsah adresára directory na konzolu.
+Ak sa adresár otvorí úspešne, prejde sa pomocou cyklu cez jednotlivé položky v adresári a vypíšu sa ich názvy.*/
 void printDirectoryContents(const char *directory)
 {
     DIR *dir = opendir(directory);
     if (dir == NULL)
     {
-        perror("Error opening directory");
+        perror("Error: pri otvoreni adresara.");
         return;
     }
 
@@ -240,12 +277,13 @@ void printDirectoryContents(const char *directory)
     closedir(dir);
 }
 
+/* Funkcia printDirectory vypíše názvy podadresárov v adresári directory na konzolu.*/
 void printDirectory(const char *directory)
 {
     DIR *dir = opendir(directory);
     if (dir == NULL)
     {
-        perror("Error opening directory");
+        perror("Error: pri otvoreni adresara.");
         return;
     }
 
@@ -261,24 +299,30 @@ void printDirectory(const char *directory)
     closedir(dir);
 }
 
-
+/* Funkcia deleteFile vymaže súbor s názvom filename.
+Funkcia vráti hodnotu 0 ak bol súbor úspešne vymazaný, inak vráti chybové hlásenie.*/
 void deleteFile(const char *filename)
 {
     // Use unlink() function to delete file
     if (unlink(filename) != 0)
     {
-        perror("Error deleting file");
+        perror("Error: pri mazani suboru");
         return;
     }
 }
 
-
+/* Táto funkcia slúži na vymazanie adresára a všetkého, čo sa v ňom nachádza.
+Funkcia otvorí adresár pomocou volania opendir, a následne prejde rekurzívne všetky položky,
+ktoré sa v ňom nachádzajú. V prípade, že sa jedná o adresár, volá sa funkcia rekurzívne na tento adresár.
+V prípade, že sa jedná o súbor, použije sa funkcia unlink na jeho vymazanie.
+Po prejdení všetkých položiek sa adresár zavrie pomocou closedir a samotný adresár sa vymaže pomocou rmdir.
+V prípade chyby sa vypíše chybové hlásenie pomocou perror.*/
 void deleteDirectory(const char *directory)
 {
     DIR *dir = opendir(directory);
     if (dir == NULL)
     {
-        perror("Error opening directory");
+        perror("Error: pri otvoreni adresara.");
         return;
     }
 
@@ -293,7 +337,6 @@ void deleteDirectory(const char *directory)
 
         char path[1024];
         snprintf(path, sizeof(path), "%s/%s", directory, entry->d_name);
-
         if (entry->d_type == DT_DIR)
         {
             // Recursively delete subdirectory
@@ -304,18 +347,17 @@ void deleteDirectory(const char *directory)
             // Delete file
             if (unlink(path) != 0)
             {
-                perror("Error deleting file");
+                perror("Error: pri vymazavani suboru.");
                 closedir(dir);
                 return;
             }
         }
     }
-
     // Close directory and delete it
     closedir(dir);
     if (rmdir(directory) != 0)
     {
-        perror("Error deleting directory");
+        perror("Error: pri mazani adresara.");
         return;
     }
 }
