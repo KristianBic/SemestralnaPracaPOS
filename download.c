@@ -107,7 +107,7 @@ void downloadHTTP(CLIENT_INFO *client)
 {
 
   int fd;
-  if ((fd = open(client->slicedURL->fileName, O_WRONLY | O_CREAT, 0666)) == -1)
+  if ((fd = open(client->slicedURL->localFileName, O_WRONLY | O_CREAT, 0666)) == -1)
   {
     printf("Error. Subor sa neda otvorit\n");
     return;
