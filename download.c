@@ -24,8 +24,6 @@ CLIENT_INFO download(URL_SLICED *slicedURL, int socked, int id, MUTEX *mut)
   clientA.mutex = mut;
   clientA.slicedURL = slicedURL;
   clientA.sockfd = socked;
-  clientA.username = "";
-  clientA.password = "";
   clientA.fileSize = 0;
   clientA.downloadedSize = 0;
   clientA.priority = 0;

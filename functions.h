@@ -10,10 +10,13 @@ typedef struct
     const char* domain;
     const char* domainPath;
     const char* protocol;
-    const char* port;
+    char* port;
     char* fileName;
     const char* localDomainPath;
     char* localFileName;
+
+    char* username;
+    char* password;
 } URL_SLICED;
 
 URL_SLICED* split_url(URL_SLICED* info, const char* url);

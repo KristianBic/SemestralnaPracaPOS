@@ -15,8 +15,6 @@ typedef struct clientInformations{
     MUTEX* mutex;
     URL_SLICED* slicedURL;
     int sockfd;
-    char* username;
-    char* password;
     double currentSpeed;
     int fileSize;
     int downloadedSize;

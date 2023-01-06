@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 
 /* Táto funkcia slúži ako hlavný program a obsahuje interaktívny menu, v ktorom užívateľ môže zadať rôzne príkazy.
@@ -261,7 +262,7 @@ URL_SLICED downloadInput()
   char urlConsole[100];
   char localFileConsole[100];
   char localDirectory[100];
-  char urlConsoleDefault[100] = "http://xcal1.vodafone.co.uk/5MB.zip";
+  char urlConsoleDefault[100] = "ftp://ftp.cs.brown.edu/pub/Effective_C++_errata.txt";
 
   printf("------------------------------------------------------------------------------------------- \n");
   printf("Zadajte link(URL) alebo stlacte enter pre stiahnutie suboru. DEFAULT: http://xcal1.vodafone.co.uk/5MB.zip\n");
@@ -333,11 +334,49 @@ URL_SLICED downloadInput()
     urlSliced.localDomainPath = localDirectory;
   }
 
+  if (strcmp(urlSliced.protocol, "ftp") == 0 || strcmp(urlSliced.protocol, "ftps") == 0)
+  {
+      char port[256], username[256], password[256];
+      printf("Enter FTP/FTPS username: ");
+      gets(username);
+      if (strcmp(username, "") == 0)
+      {
+          urlSliced.username = "";
+      } else {
+          urlSliced.username = strcpy((char *)malloc(strlen(username) + 1), username);
+      }
+
+      printf("Enter FTP/FTPS password: ");
+      gets(password);
+      if (strcmp(password, "") == 0)
+      {
+          urlSliced.password = "";
+      } else {
+          urlSliced.password = strcpy((char *)malloc(strlen(password) + 1), password);
+      }
+
+      printf("Enter FTP/FTPS port number: \n");
+      gets(port);
+      if (!isdigit(*port))
+      {
+          printf("Error: Invalid port number.\n");
+      }
+      if(strcmp(port, "") == 0) {
+          urlSliced.port = "21"; //treba este skontrolovat ci uz nahodou nebolo v ipecke port ... v spliceURL to robi ale iba pri ipcke a nie pri urlcke
+      } else {
+          urlSliced.port = strcpy((char *)malloc(strlen(port) + 1), port);
+      }
+  }
+
 
   printf("------------------------------------------------------------------------------------------- \n");
   printf("Aktualny adresar: %s\n", getCurrentDirectory());
   printf("Protocol: %s\nSite: %s\nPort: %s\nPath: %s\nFileName: %s\nLocal Path: %s\nLocal FileName: %s\n",
          urlSliced.protocol, urlSliced.domain, urlSliced.port, urlSliced.domainPath, urlSliced.fileName, urlSliced.localDomainPath, urlSliced.localFileName);
+  if (strcmp(urlSliced.protocol, "ftp") == 0 || strcmp(urlSliced.protocol, "ftps") == 0) {
+      printf("Username: %s\nPassword: %s\n",
+             urlSliced.username, urlSliced.password);
+  }
   printf("------------------------------------------------------------------------------------------- \n");
 
   return urlSliced;

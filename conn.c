@@ -28,13 +28,8 @@ int serverConnection(URL_SLICED* slicedURL) {
     }
 
     addr_list = (struct in_addr **) he->h_addr_list;
-
     server.sin_family = AF_INET;
-    if (strcmp(slicedURL->protocol, "ftp") == 0) {
-        server.sin_port = htons(21);
-    } else {
-        server.sin_port = htons(atoi(slicedURL->port));
-    }
+    server.sin_port = htons(atoi(slicedURL->port));
     server.sin_addr = *addr_list[0];
 
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) { //create socket
@@ -49,6 +44,19 @@ int serverConnection(URL_SLICED* slicedURL) {
         perror("Pripojenie zlyhalo");
         close(sockfd);
         exit(-1);
+    }
+
+    if (strcmp(slicedURL->protocol, "ftp") == 0 || strcmp(slicedURL->protocol, "ftps") == 0)
+    {
+        // Send login credentials to FTP/FTPS server
+        char request[512];
+        sprintf(request, "USER %s\nPASS %s\n", slicedURL->username, slicedURL->password);
+        send(sockfd, request, strlen(request), 0);
+
+        // Read response from server
+        char response[256];
+        recv(sockfd, response, sizeof(response), 0);
+        printf("%s\n", response);
     }
 
     printf("Pripojenie prebehlo uspesne \n");
