@@ -341,7 +341,7 @@ URL_SLICED downloadInput()
       gets(username);
       if (strcmp(username, "") == 0)
       {
-          urlSliced.username = "";
+          urlSliced.username = ""; //neviem ci treba alokovat pamet ak tam nic neni
       } else {
           urlSliced.username = strcpy((char *)malloc(strlen(username) + 1), username);
       }
