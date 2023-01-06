@@ -11,6 +11,8 @@
 
 #include "download.h"
 
+void downloadFTP(CLIENT_INFO *pInformations);
+
 /*Vytvorí a inicializuje štruktúru CLIENT_INFO s údajmi o stiahnutom súbore.
 Parametre:
 slicedURL: ukazovateľ na štruktúru URL_SLICED obsahujúcu informácie o URL súboru na stiahnutie.
@@ -54,7 +56,7 @@ void startDownload(CLIENT_INFO *client)
   }
   else if (strcmp(client->slicedURL->protocol, "ftp") == 0)
   {
-    downloadHTTP(client);
+    downloadFTP(client);
     // ftp();
   }
   else if (strcmp(client->slicedURL->protocol, "ftps") == 0)
@@ -62,6 +64,8 @@ void startDownload(CLIENT_INFO *client)
     // ftps();
   }
 }
+
+
 
 /*Funkcia pozastaví stahovanie súboru.
 Parametre:
@@ -94,6 +98,59 @@ void resumeDownload(CLIENT_INFO *client)
     client->downloading = true;
     client->resume = true;
     client->pause = false;
+}
+
+
+void downloadFTP(CLIENT_INFO *client) {
+    int fd;
+    if ((fd = open(client->slicedURL->localFileName, O_WRONLY | O_CREAT, 0666)) == -1)
+    {
+        printf("Error. Subor sa neda otvorit\n");
+        return;
+    }
+
+    printf("Stahovanie suboru: %s\n", client->slicedURL->fileName);
+
+    char recv_data[BUFFER_SIZE];
+    char send_data[BUFFER_SIZE];
+
+    sprintf(send_data, "RETR %s\\r\\n", client->slicedURL->domainPath); // mozno nie domaiPath ale filename
+
+    if (send(client->sockfd, send_data, strlen(send_data), 0) < 0)
+    {
+        perror("Error posielanie HTTP requestu");
+        exit(1);
+    }
+    if (recv(client->sockfd, recv_data, strlen(recv_data), 0) < 0)
+    {
+        perror("Error citania HTTP responzu");
+        exit(2);
+    }
+
+    printf("Downloading...\n");
+/*
+    FILE *f = fopen(client->slicedURL->localFileName, "w+");
+    if (f == NULL)
+    {
+        perror("Error: pri otvoreni lokalneho suboru na stahovanie");
+        pthread_exit(NULL);
+    }
+
+    int bytes_read;
+    char buffer[BUFFER_SIZE];
+
+    while ((bytes_read = recv(client->sockfd, buffer, BUFFER_SIZE, 0)) > 0) {
+        printf("Downloading...%d\n", bytes_read);
+        fwrite(buffer, 1, bytes_read, f);
+        client->downloadedSize += bytes_read;
+        fflush(stdout);
+    }
+    fclose(f);
+*/
+    printf("------------------------------------------------------------------------------------------- \n");
+
+    close(client->sockfd);
+    pthread_exit(NULL);
 }
 
 /*Táto funkcia sa používa na stiahnutie súboru cez protokol HTTP.
