@@ -7,7 +7,7 @@
 typedef struct
 {
     const char* fullUrl;
-    const char* domain;
+     char* domain;
     const char* domainPath;
     const char* protocol;
     char* port;
@@ -31,9 +31,10 @@ void clear_log();
 
 int createDirectory(const char* path);
 int directoryExists(const char* path);
-void printDirectoryContents(const char *directory);
+void printFiles(const char *directory);
 void printDirectory(const char *directory);
 void deleteFile(const char *filename);
 void deleteDirectory(const char *directory);
 void get_unique_filename(char *filename);
+int parseHostAndPort(char *response, char *host, int *port);
 #endif //SEMESTRALNAPRACAPOS_FUNCTIONS_H

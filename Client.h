@@ -15,6 +15,7 @@ typedef struct
     int pocetPrvkov;
 } ZOZNAM_VLAKIEN;
 
+
 void printInformations(ZOZNAM_VLAKIEN *ptr);
 void* downloadThread(void* zoznamVlakien);
 void initialInput();

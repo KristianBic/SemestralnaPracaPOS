@@ -16,6 +16,7 @@ Pri zadaní príkazu "pause", "resume" alebo "stop" sa vyberie ID procesu, ktor�
 Pri zadaní príkazu "exit" sa program ukončí.*/
 int main()
 {
+
   pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
   pthread_cond_t stop = PTHREAD_COND_INITIALIZER;
   pthread_cond_t start = PTHREAD_COND_INITIALIZER;
@@ -24,7 +25,7 @@ int main()
 
   ZOZNAM_VLAKIEN zoznamVlakien;
   zoznamVlakien.pocetPrvkov = 0;
-  char input[100];
+  char input[256];
   pthread_t threadDownload;
 
   printf("------------------------------------------------------------------------------------------- \n");
@@ -38,7 +39,6 @@ int main()
       URL_SLICED urlSliced;
       urlSliced = downloadInput();
       int sock = serverConnection(&urlSliced);
-
        zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov] = download(&urlSliced, sock, zoznamVlakien.pocetPrvkov, &mutex);
        zoznamVlakien.vlakna[zoznamVlakien.pocetPrvkov].planningTime = imputPlanningTime();
        zoznamVlakien.pocetPrvkov++;
@@ -71,13 +71,13 @@ int main()
     else if (strcmp(input, "historia") == 0)
     {
       printf("Zadajte co chcete robit - show , clear\n");
-      char input[100];
-      gets(input);
-      if (strcmp(input, "show") == 0)
+      char proces[10];
+      gets(proces);
+      if (strcmp(proces, "show") == 0)
       {
         printLog();
       }
-      else if (strcmp(input, "clear") == 0)
+      else if (strcmp(proces, "clear") == 0)
       {
         clear_log();
       }
@@ -93,16 +93,20 @@ int main()
       char proces[2];
       gets(proces);
       char *command = strtok(proces, " ");
-
-      for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i)
+      if (!isdigit(*command))
       {
-        char str[2];
-        sprintf(str, "%d", i);
-        if (strcmp(command, str) == 0)
-        {
-          pauseDownload(&zoznamVlakien.vlakna[i]);
+          printf("Error: Nespravne id\n");
+      } else {
+          for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i)
+          {
+            char str[2];
+            sprintf(str, "%d", i);
+            if (strcmp(command, str) == 0)
+            {
+              pauseDownload(&zoznamVlakien.vlakna[i]);
+            }
+          }
         }
-      }
     }
     else if (strcmp(input, "resume") == 0)
     {
@@ -111,16 +115,18 @@ int main()
       char proces[2];
       gets(proces);
       char *command = strtok(proces, " ");
-
-      for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i)
-      {
-        char str[2];
-        sprintf(str, "%d", i);
-        if (strcmp(command, str) == 0)
+        if (!isdigit(*command))
         {
-          resumeDownload(&zoznamVlakien.vlakna[i]);
+            printf("Error: Nespravne id\n");
+        } else {
+            for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
+                char str[2];
+                sprintf(str, "%d", i);
+                if (strcmp(command, str) == 0) {
+                    resumeDownload(&zoznamVlakien.vlakna[i]);
+                }
+            }
         }
-      }
     }
     else if (strcmp(input, "stop") == 0)
     {
@@ -129,31 +135,33 @@ int main()
       char proces[2];
       gets(proces);
       char *command = strtok(proces, " ");
-
-      for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i)
-      {
-        char str[2];
-        sprintf(str, "%d", i);
-        if (strcmp(command, str) == 0)
+        if (!isdigit(*command))
         {
-          stopDownload(&zoznamVlakien.vlakna[i]);
+            printf("Error: Nespravne id\n");
+        } else {
+            for (int i = 0; i < zoznamVlakien.pocetPrvkov; ++i) {
+                char str[2];
+                sprintf(str, "%d", i);
+                if (strcmp(command, str) == 0) {
+                    stopDownload(&zoznamVlakien.vlakna[i]);
+                }
+            }
         }
-      }
     }
     else if (strcmp(input, "deleteFile") == 0)
     {
-      printInformations(&zoznamVlakien);
-      printf("Zadajte nazov suboru\n");
-      char proces[2];
+        printFiles(getCurrentDirectory());
+      printf("\nZadajte nazov suboru\n");
+      char proces[128];
       gets(proces);
       char *command = strtok(proces, " ");
       deleteFile(command);
     }
     else if (strcmp(input, "deleteDir") == 0)
     {
-      printInformations(&zoznamVlakien);
-      printf("Zadajte nazov suboru\n");
-      char proces[2];
+        printDirectory(getCurrentDirectory());
+      printf("\nZadajte nazov suboru\n");
+      char proces[128];
       gets(proces);
       char *command = strtok(proces, " ");
       if (strcmp(command, "") != 0)
@@ -208,10 +216,19 @@ int main()
     free((void *)zoznamVlakien.vlakna[i].slicedURL->protocol);
     free((void *)zoznamVlakien.vlakna[i].slicedURL->fullUrl);
 
-      free((void *)zoznamVlakien.vlakna[i].slicedURL->fileName);
-      free((void *)zoznamVlakien.vlakna[i].slicedURL->localFileName);
-      free((void *)zoznamVlakien.vlakna[i].slicedURL->localDomainPath);
+    free((void *)zoznamVlakien.vlakna[i].slicedURL->fileName);
+    //free((void *)zoznamVlakien.vlakna[i].slicedURL->domainPath);//treba ?
+    free((void *)zoznamVlakien.vlakna[i].slicedURL->localFileName);
+    free((void *)zoznamVlakien.vlakna[i].slicedURL->localDomainPath);
 
+    /*
+    if (strcmp(zoznamVlakien.vlakna[i].slicedURL->protocol, "ftp") == 0 || strcmp(zoznamVlakien.vlakna[i].slicedURL->protocol, "ftps") == 0)
+    {
+        free((void *)zoznamVlakien.vlakna[i].slicedURL->port);
+        free((void *)zoznamVlakien.vlakna[i].slicedURL->username);
+        free((void *)zoznamVlakien.vlakna[i].slicedURL->password);
+    }
+*/
     pthread_mutex_destroy(zoznamVlakien.vlakna[i].mutex->mut);
     pthread_cond_destroy(zoznamVlakien.vlakna[i].mutex->stop);
     pthread_cond_destroy(zoznamVlakien.vlakna[i].mutex->start);
@@ -230,13 +247,15 @@ void printInformations(ZOZNAM_VLAKIEN *ptr)
   {
     double percentage = (double)ptr->vlakna[i].downloadedSize / ptr->vlakna[i].fileSize;
     int bar_length = 20;
+    char *time_str = getCurrentTime();
     int progress = (int)(percentage * bar_length);
-    printf("\r[%s] ID: %d, Priorita: %d, Stahovanie suboru: '%s', Prijate: %.2f/%.2f MB, Rychlost: (%.2f MB/s) [", getCurrentTime(), ptr->vlakna[i].id, ptr->vlakna[i].priority, ptr->vlakna[i].slicedURL->localFileName, (double)ptr->vlakna[i].downloadedSize / (1024 * 1024), (double)ptr->vlakna[i].fileSize / (1024 * 1024),  ptr->vlakna[i].currentSpeed / 1024.0 / 1024.0);
+    printf("\r[%s] ID: %d, Priorita: %d, Stahovanie suboru: '%s', Prijate: %.2f/%.2f MB, Rychlost: (%.2f MB/s) [", time_str, ptr->vlakna[i].id, ptr->vlakna[i].priority, ptr->vlakna[i].slicedURL->localFileName, (double)ptr->vlakna[i].downloadedSize / (1024 * 1024), (double)ptr->vlakna[i].fileSize / (1024 * 1024),  ptr->vlakna[i].currentSpeed / 1024.0 / 1024.0);
       for (int i = 0; i < bar_length; i++)
       {
            printf("%c", i <= progress ? '#' : ' ');
       }
        printf("] \n");
+      free(time_str);
   }
     printf("------------------------------------------------------------------------------------------- \n");
 }
@@ -262,10 +281,15 @@ URL_SLICED downloadInput()
   char urlConsole[100];
   char localFileConsole[100];
   char localDirectory[100];
-  char urlConsoleDefault[100] = "ftp://ftp.cs.brown.edu/pub/Effective_C++_errata.txt";
+  char urlConsoleDefault[1000] = "http://xcal1.vodafone.co.uk/5MB.zip";
 
   printf("------------------------------------------------------------------------------------------- \n");
-  printf("Zadajte link(URL) alebo stlacte enter pre stiahnutie suboru. DEFAULT: http://xcal1.vodafone.co.uk/5MB.zip\n");
+  printf("Zadajte link(URL) alebo stlacte enter pre stiahnutie suboru.\n");
+  printf("HTTP: http://xcal1.vodafone.co.uk/5MB.zip\n");
+  printf("HTTPS: https://speed.hetzner.de/100MB.bin\n");
+  printf("FTP: ftp://ftp.cs.brown.edu/pub/Effective_C++_errata.txt\n");
+  printf("FTPS: ftps://ftp.cs.brown.edu/pub/Effective_C++_errata.txt\n");
+
   gets(urlConsole);
   if (strcmp(urlConsole, "") == 0)
   {
@@ -290,6 +314,8 @@ URL_SLICED downloadInput()
   if (strcmp(localFileConsole, "") != 0)
   {
       urlSliced.localFileName = strcpy((char *)malloc(strlen(localFileConsole) + 1), localFileConsole);
+  } else {
+      urlSliced.localFileName = strcpy((char *)malloc(strlen(urlSliced.fileName) + 1), urlSliced.fileName);
   }
 
     if(access(urlSliced.localFileName, F_OK) == 0) { //if file exists
@@ -318,20 +344,21 @@ URL_SLICED downloadInput()
   if (strcmp(localDirectory, "") == 0)
   {
     printf("Adresar ostava nezmeneny\n");
+      urlSliced.localDomainPath = strcpy((char *)malloc(strlen(urlSliced.domainPath) + 1), urlSliced.domainPath);
   }
   else if (!directoryExists(localDirectory))
   {
     createDirectory(localDirectory);
     strcat(localDirectory, "/");
     strcat(localDirectory, urlSliced.localFileName);
-    urlSliced.localDomainPath = localDirectory;
+    urlSliced.localDomainPath = strcpy((char *)malloc(strlen(localDirectory) + 1), localDirectory);
   }
   else if (directoryExists(localDirectory))
   {
     chdir(localDirectory);
     strcat(localDirectory, "/");
     strcat(localDirectory, urlSliced.localFileName);
-    urlSliced.localDomainPath = localDirectory;
+    urlSliced.localDomainPath = strcpy((char *)malloc(strlen(localDirectory) + 1), localDirectory);
   }
 
   if (strcmp(urlSliced.protocol, "ftp") == 0 || strcmp(urlSliced.protocol, "ftps") == 0)
@@ -341,7 +368,7 @@ URL_SLICED downloadInput()
       gets(username);
       if (strcmp(username, "") == 0)
       {
-          urlSliced.username = ""; //neviem ci treba alokovat pamet ak tam nic neni
+          urlSliced.username = "";
       } else {
           urlSliced.username = strcpy((char *)malloc(strlen(username) + 1), username);
       }
@@ -393,10 +420,22 @@ int imputPlanningTime()
   {
     printf("Zadajte pocet hodin \n");
     gets(hodiny);
+      if (!isdigit(*cas))
+      {
+          hodiny[0] = '0';
+      }
     printf("Zadajte pocet minut \n");
     gets(minuty);
+      if (!isdigit(*minuty))
+      {
+          minuty[0] = '0';
+      }
     printf("Zadajte pocet sekund \n");
     gets(sekundy);
+      if (!isdigit(*sekundy))
+      {
+          sekundy[0] = '0';
+      }
     printf("Stahovanie sa uskutocni o %d:%d:%d \n", atoi(hodiny), atoi(minuty), atoi(sekundy));
   }
   else if (strcmp(cas, "n") == 0)
@@ -409,3 +448,4 @@ int imputPlanningTime()
   printf("------------------------------------------------------------------------------------------- \n");
   return (atoi(sekundy) + (atoi(minuty) * 60) + (atoi(hodiny) * 60 * 60));
 }
+

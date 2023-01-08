@@ -13,6 +13,7 @@
 /*Tento kód je zodpovedný za rozdelenie URL adresy na jednotlivé časti, ako napríklad protokol, doménu, port a cestu k súboru.
 Tiež obsahuje funkcie na stiahnutie HTML obsahu z HTTP servera.
 Prvá funkcia split_url rozdeľuje URL adresu na jednotlivé časti a ukladá ich do štruktúry URL_SLICED.
+Ciastocne prebrate z linku - https://stackoverflow.com/questions/726122/best-ways-of-parsing-a-url-using-c;
 Štruktúra má nasledujúce polia:
 
 protocol - protokol použitý v URL adrese, napríklad "http"
@@ -71,9 +72,9 @@ URL_SLICED *split_url(URL_SLICED *slicedURL, const char *url)
     char *fileName = strrchr(slicedURL->domainPath, '/') + 1;
     if (fileName && *(fileName)) {
         slicedURL->fileName = strcpy((char *)malloc(strlen(fileName) + 1), fileName);
-        slicedURL->localFileName = strcpy((char *)malloc(strlen(fileName) + 1), fileName);
+
     }
-    slicedURL->localDomainPath = strcpy((char *)malloc(strlen(slicedURL->domainPath) + 1), slicedURL->domainPath);
+
 
     return slicedURL;
 }
@@ -233,7 +234,7 @@ int directoryExists(const char *path)
 
 /* Funkcia printDirectoryContents vypíše obsah adresára directory na konzolu.
 Ak sa adresár otvorí úspešne, prejde sa pomocou cyklu cez jednotlivé položky v adresári a vypíšu sa ich názvy.*/
-void printDirectoryContents(const char *directory)
+void printFiles(const char *directory)
 {
     DIR *dir = opendir(directory);
     if (dir == NULL)
@@ -245,7 +246,10 @@ void printDirectoryContents(const char *directory)
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL)
     {
-        printf("%s\n", entry->d_name);
+        if (entry->d_type != DT_DIR)
+        {
+            printf("%s\t", entry->d_name);
+        }
     }
 
     closedir(dir);
@@ -289,7 +293,9 @@ Funkcia otvorí adresár pomocou volania opendir, a následne prejde rekurzívne
 ktoré sa v ňom nachádzajú. V prípade, že sa jedná o adresár, volá sa funkcia rekurzívne na tento adresár.
 V prípade, že sa jedná o súbor, použije sa funkcia unlink na jeho vymazanie.
 Po prejdení všetkých položiek sa adresár zavrie pomocou closedir a samotný adresár sa vymaže pomocou rmdir.
-V prípade chyby sa vypíše chybové hlásenie pomocou perror.*/
+V prípade chyby sa vypíše chybové hlásenie pomocou perror.
+Inspirovali sme sa: https://stackoverflow.com/questions/2256945/removing-a-non-empty-directory-programmatically-in-c-or-c*/
+
 void deleteDirectory(const char *directory)
 {
     DIR *dir = opendir(directory);
@@ -331,6 +337,7 @@ void deleteDirectory(const char *directory)
     }
 }
 
+/* Metoda je ciastocne inspirovana z internetu */
 void  get_unique_filename(char *filename) {
     char *dot_pos = strrchr(filename, '.');
 
@@ -360,4 +367,23 @@ void  get_unique_filename(char *filename) {
             index++;
         }
     }
+}
+
+/* Ciastocne inspirovane z linku:
+ * https://stackoverflow.com/questions/5395150/c-string-matchinghostname-and-port
+ */
+int parseHostAndPort(char *response, char *host, int *port)
+{
+    char *start, *end;
+    int h1, h2, h3, h4, p1, p2;
+    if ((start = strchr(response, '(')) && (end = strchr(response, ')')))
+    {
+        if (sscanf(start + 1, "%d,%d,%d,%d,%d,%d", &h1, &h2, &h3, &h4, &p1, &p2) == 6)
+        {
+            sprintf(host, "%d.%d.%d.%d", h1, h2, h3, h4);
+            *port = p1 * 256 + p2;
+            return 1;
+        }
+    }
+    return 0;
 }
