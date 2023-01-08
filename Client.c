@@ -448,4 +448,3 @@ int imputPlanningTime()
   printf("------------------------------------------------------------------------------------------- \n");
   return (atoi(sekundy) + (atoi(minuty) * 60) + (atoi(hodiny) * 60 * 60));
 }
-

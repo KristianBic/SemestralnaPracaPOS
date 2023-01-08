@@ -2,7 +2,6 @@
 #define SEMESTRALNAPRACAPOS_CLIENT_H
 
 #include <pthread.h>
-
 #include "functions.h"
 #include "config.h"
 #include "conn.h"
@@ -15,10 +14,9 @@ typedef struct
     int pocetPrvkov;
 } ZOZNAM_VLAKIEN;
 
-
 void printInformations(ZOZNAM_VLAKIEN *ptr);
 void* downloadThread(void* zoznamVlakien);
-void initialInput();
 URL_SLICED downloadInput();
 int imputPlanningTime();
+
 #endif //SEMESTRALNAPRACAPOS_CLIENT_H
