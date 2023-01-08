@@ -24,8 +24,6 @@ CLIENT_INFO download(URL_SLICED *slicedURL, int socked, int id, MUTEX *mut)
   clientA.mutex = mut;
   clientA.slicedURL = slicedURL;
   clientA.sockfd = socked;
-  clientA.username = "";
-  clientA.password = "";
   clientA.fileSize = 0;
   clientA.downloadedSize = 0;
   clientA.priority = 0;
@@ -52,18 +50,18 @@ void startDownload(CLIENT_INFO *client)
   else if (strcmp(client->slicedURL->protocol, "https") == 0)
   {
     downloadHTTP(client);
-    // https();
   }
   else if (strcmp(client->slicedURL->protocol, "ftp") == 0)
   {
-    downloadHTTP(client);
-    // ftp();
+    downloadFTP(client);
   }
   else if (strcmp(client->slicedURL->protocol, "ftps") == 0)
   {
-    // ftps();
+      downloadFTP(client);
   }
 }
+
+
 
 /*Funkcia pozastaví stahovanie súboru.
 Parametre:
@@ -96,6 +94,42 @@ void resumeDownload(CLIENT_INFO *client)
     client->downloading = true;
     client->resume = true;
     client->pause = false;
+}
+
+
+void downloadFTP(CLIENT_INFO *client) {
+
+    int fd;
+    if ((fd = open(client->slicedURL->localFileName, O_WRONLY | O_CREAT, 0666)) == -1)
+    {
+        printf("Error. Subor sa neda otvorit\n");
+        return;
+    }
+
+    printf("Stahovanie suboru: %s\n", client->slicedURL->fileName);
+
+    char recv_data[BUFFER_SIZE];
+    char send_data[BUFFER_SIZE];
+
+    sprintf(send_data, "RETR %s\n", client->slicedURL->domainPath); // mozno nie domaiPath ale filename
+
+    if (send(client->sockfd, send_data, strlen(send_data), 0) < 0)
+    {
+        perror("Error posielanie FTP requestu");
+        exit(1);
+    }
+    if (recv(client->sockfd, recv_data, strlen(recv_data), 0) < 0)
+    {
+        perror("Error citania FTP responzu");
+        exit(2);
+    }
+    printf("%s\n", recv_data);
+
+    printf("Downloading...\n");
+
+
+    http_download_file(client);
+    close(fd);
 }
 
 /*Táto funkcia sa používa na stiahnutie súboru cez protokol HTTP.

@@ -13,6 +13,7 @@
 /*Tento kód je zodpovedný za rozdelenie URL adresy na jednotlivé časti, ako napríklad protokol, doménu, port a cestu k súboru.
 Tiež obsahuje funkcie na stiahnutie HTML obsahu z HTTP servera.
 Prvá funkcia split_url rozdeľuje URL adresu na jednotlivé časti a ukladá ich do štruktúry URL_SLICED.
+Ciastocne prebrate z linku - https://stackoverflow.com/questions/726122/best-ways-of-parsing-a-url-using-c;
 Štruktúra má nasledujúce polia:
 
 protocol - protokol použitý v URL adrese, napríklad "http"
@@ -69,42 +70,12 @@ URL_SLICED *split_url(URL_SLICED *slicedURL, const char *url)
         slicedURL->protocol = "tcp";
 
     char *fileName = strrchr(slicedURL->domainPath, '/') + 1;
-    if (fileName && *(fileName))
-        slicedURL->fileName = fileName;
+    if (fileName && *(fileName)) {
+        slicedURL->fileName = strcpy((char *)malloc(strlen(fileName) + 1), fileName);
 
-    if (strcmp(slicedURL->protocol, "http") == 0 || strcmp(slicedURL->protocol, "https") == 0)
-    {
-        // No need to prompt for username and password for HTTP/HTTPS
     }
-    else if (strcmp(slicedURL->protocol, "ftp") == 0 || strcmp(slicedURL->protocol, "ftps") == 0)
-    {
-        // Prompt user for FTP/FTPS username and password
-        char *username[256], password[256], port[256];
-        printf("Enter FTP/FTPS username: ");
-        fgets(username, sizeof(username), stdin);
-        username[strcspn(username, "\r\n")] = 0; // remove newline character
-        printf("Enter FTP/FTPS password: ");
-        fgets(password, sizeof(password), stdin);
-        password[strcspn(password, "\r\n")] = 0; // remove newline character
 
-        printf("Enter FTP/FTPS port number: ");
-        fgets(port, sizeof(port), stdin);
-        port[strcspn(port, "\r\n")] = 0; // remove newline character
-        if (!isdigit(*port))
-        {
-            printf("Error: Invalid port number.\n");
-            return NULL;
-        }
-        slicedURL->username = username;
-        slicedURL->password = password;
-        slicedURL->port = port;
-        printf("SPLIT URL username: %s, password: %s, port: %s\n", slicedURL->username, slicedURL->password, slicedURL->port);
-    }
-    else
-    {
-        printf("Error: Unsupported protocol.\n");
-        return NULL;
-    }
+
     return slicedURL;
 }
 
@@ -126,27 +97,11 @@ int contentLength(char *length)
     return content_length;
 }
 
-/*Funkcia downloadHTMLfromHTTP slúži na stiahnutie HTML obsahu z HTTP servera pomocou HTTP GET požiadavky.
- Funkcia vyžaduje soket pre komunikáciu s HTTP serverom ako argument*/
-void downloadHTMLfromHTTP(int sockfd)
-{
-    char buf[2056];
-    int byte_count;
-
-    char *header = "GET /index.html HTTP/1.1\r\nHost: www.example.com\r\n\r\n";
-    send(sockfd, header, strlen(header), 0);
-    printf("GET odoslaný...\n");
-    // all right ! now that we're connected, we can receive some data!
-    byte_count = recv(sockfd, buf, sizeof(buf), 0);
-    printf("recv() získal %d bajtov dát v buffri.\n", byte_count);
-    printf("%.*s", byte_count, buf); // <-- predaj printf() skutočnú veľkosť dát
-}
 
 /* Táto funkcia slúži na vymazanie obsahu zo súboru "log_file.txt".
 Ak súbor neexistuje alebo nie je možné ho otvoriť na zápis, funkcia vypíše chybové hlásenie*/
 void clear_log()
 {
-    // pthread_mutex_lock(&log_lock);
     FILE *fp = fopen("log_file.txt", "w");
     if (fp == NULL)
     {
@@ -156,14 +111,12 @@ void clear_log()
     {
         fclose(fp);
     }
-    // pthread_mutex_unlock(&log_lock);
 }
 
 /*Táto funkcia slúži na výpis obsahu súboru "log_file.txt".
 Ak súbor neexistuje alebo nie je možné ho otvoriť na čítanie, funkcia vypíše chybové hlásenie.*/
 void printLog()
 {
-    // pthread_mutex_lock(&log_lock);
     FILE *fp = fopen("log_file.txt", "r");
     if (fp == NULL)
     {
@@ -178,7 +131,6 @@ void printLog()
         }
         fclose(fp);
     }
-    // pthread_mutex_unlock(&log_lock);
 }
 
 /* Táto funkcia slúži na prevod veľkosti súboru na ľudovo čitateľnú jednotku (napríklad B, KB, MB alebo GB).
@@ -212,30 +164,21 @@ Na konci funkcie sa súbor zavrie a uvoľní sa alokovaná pamäť pre aktuálny
 Funkcia tiež vyšle signál pre ďalšie vlákno a odomkne zámok mutexu.*/
 void write_to_log(char *filename, char *url, int size, char *sizeUnit, double elapsed_time, pthread_cond_t *start, pthread_mutex_t *mut)
 {
-
     FILE *log_file;
-    // Open log file in append mode
     FILE *fp = fopen("log_file.txt", "a");
     if (fp == NULL)
     {
         perror("Error: nemohol otvorit subor log_file na zapis");
         return;
     }
-    // Get current time
     char *time_str = getCurrentTime();
-    // Get current working directory
     char *cwd = getCurrentDirectory();
     char *size_units = getSizeUnit(size);
 
-    // Write log entry to file
-    fprintf(fp, "[%s] Stiahnutý súbor '%s' (%s za %.2lf sekúnd) z %s do %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
+    fprintf(fp, "[%s] Stiahnuty subor '%s' (%s za %.2lf sekund) z %s do %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
+    printf("[%s] Stiahnuty subor '%s' (%s za %.2lf sekund) z %s do %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
 
-    // Print log entry to console
-    printf("[%s] Stiahnutý súbor '%s' (%s za %.2lf sekúnd) z %s do %s\n", time_str, filename, size_units, elapsed_time, url, cwd);
-
-    // Close log file
     fclose(fp);
-    // sleep(20);
     free(time_str);
     pthread_cond_signal(start);
     pthread_mutex_unlock(mut);
@@ -271,11 +214,10 @@ char *getCurrentTime()
 Funkcia vráti 0 ak bol adresár úspešne vytvorený, inak vráti -1.*/
 int createDirectory(const char *path)
 {
-    // Create directory
     int status = mkdir(path, 0777);
     if (status < 0)
     {
-        perror("Error: mkdir");
+        perror("Error: vytvaranie adresara - mkdir");
         return -1;
     }
     chdir(path);
@@ -292,7 +234,7 @@ int directoryExists(const char *path)
 
 /* Funkcia printDirectoryContents vypíše obsah adresára directory na konzolu.
 Ak sa adresár otvorí úspešne, prejde sa pomocou cyklu cez jednotlivé položky v adresári a vypíšu sa ich názvy.*/
-void printDirectoryContents(const char *directory)
+void printFiles(const char *directory)
 {
     DIR *dir = opendir(directory);
     if (dir == NULL)
@@ -304,7 +246,10 @@ void printDirectoryContents(const char *directory)
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL)
     {
-        printf("%s\n", entry->d_name);
+        if (entry->d_type != DT_DIR)
+        {
+            printf("%s\t", entry->d_name);
+        }
     }
 
     closedir(dir);
@@ -336,7 +281,6 @@ void printDirectory(const char *directory)
 Funkcia vráti hodnotu 0 ak bol súbor úspešne vymazaný, inak vráti chybové hlásenie.*/
 void deleteFile(const char *filename)
 {
-    // Use unlink() function to delete file
     if (unlink(filename) != 0)
     {
         perror("Error: pri mazani suboru");
@@ -349,7 +293,9 @@ Funkcia otvorí adresár pomocou volania opendir, a následne prejde rekurzívne
 ktoré sa v ňom nachádzajú. V prípade, že sa jedná o adresár, volá sa funkcia rekurzívne na tento adresár.
 V prípade, že sa jedná o súbor, použije sa funkcia unlink na jeho vymazanie.
 Po prejdení všetkých položiek sa adresár zavrie pomocou closedir a samotný adresár sa vymaže pomocou rmdir.
-V prípade chyby sa vypíše chybové hlásenie pomocou perror.*/
+V prípade chyby sa vypíše chybové hlásenie pomocou perror.
+Inspirovali sme sa: https://stackoverflow.com/questions/2256945/removing-a-non-empty-directory-programmatically-in-c-or-c*/
+
 void deleteDirectory(const char *directory)
 {
     DIR *dir = opendir(directory);
@@ -362,7 +308,6 @@ void deleteDirectory(const char *directory)
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL)
     {
-        // Skip current and parent directories
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
         {
             continue;
@@ -372,12 +317,10 @@ void deleteDirectory(const char *directory)
         snprintf(path, sizeof(path), "%s/%s", directory, entry->d_name);
         if (entry->d_type == DT_DIR)
         {
-            // Recursively delete subdirectory
             deleteDirectory(path);
         }
         else
         {
-            // Delete file
             if (unlink(path) != 0)
             {
                 perror("Error: pri vymazavani suboru.");
@@ -386,11 +329,61 @@ void deleteDirectory(const char *directory)
             }
         }
     }
-    // Close directory and delete it
     closedir(dir);
     if (rmdir(directory) != 0)
     {
         perror("Error: pri mazani adresara.");
         return;
     }
+}
+
+/* Metoda je ciastocne inspirovana z internetu */
+void  get_unique_filename(char *filename) {
+    char *dot_pos = strrchr(filename, '.');
+
+    if (dot_pos == NULL) {
+        int index = 1;
+        char new_filename[256];
+        while (true) {
+            sprintf(new_filename, "%s_(%d)", filename, index);
+            if (access(new_filename, F_OK) == -1) {
+                strcpy(filename, new_filename);
+                break;
+            }
+            index++;
+        }
+    } else {
+
+        int index = 1;
+        char new_filename[256];
+        char *file_extension = dot_pos + 1;
+        *dot_pos = '\0';
+        while (true) {
+            sprintf(new_filename, "%s_(%d).%s", filename, index, file_extension);
+            if (access(new_filename, F_OK) == -1) {
+                strcpy(filename, new_filename);
+                break;
+            }
+            index++;
+        }
+    }
+}
+
+/* Ciastocne inspirovane z linku:
+ * https://stackoverflow.com/questions/5395150/c-string-matchinghostname-and-port
+ */
+int parseHostAndPort(char *response, char *host, int *port)
+{
+    char *start, *end;
+    int h1, h2, h3, h4, p1, p2;
+    if ((start = strchr(response, '(')) && (end = strchr(response, ')')))
+    {
+        if (sscanf(start + 1, "%d,%d,%d,%d,%d,%d", &h1, &h2, &h3, &h4, &p1, &p2) == 6)
+        {
+            sprintf(host, "%d.%d.%d.%d", h1, h2, h3, h4);
+            *port = p1 * 256 + p2;
+            return 1;
+        }
+    }
+    return 0;
 }

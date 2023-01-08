@@ -62,10 +62,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /tmp/tmp.vsWNUjhacs
+CMAKE_SOURCE_DIR = /tmp/tmp.RolZ48t0LG
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /tmp/tmp.vsWNUjhacs/cmake-build-debug
+CMAKE_BINARY_DIR = /tmp/tmp.RolZ48t0LG/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/SemestralnaPracaPOS.dir/depend.make
@@ -78,55 +78,55 @@ include CMakeFiles/SemestralnaPracaPOS.dir/flags.make
 
 CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o: CMakeFiles/SemestralnaPracaPOS.dir/flags.make
 CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o: ../Client.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/tmp/tmp.vsWNUjhacs/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o -c /tmp/tmp.vsWNUjhacs/Client.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/tmp/tmp.RolZ48t0LG/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/SemestralnaPracaPOS.dir/Client.c.o -c /tmp/tmp.RolZ48t0LG/Client.c
 
 CMakeFiles/SemestralnaPracaPOS.dir/Client.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/SemestralnaPracaPOS.dir/Client.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /tmp/tmp.vsWNUjhacs/Client.c > CMakeFiles/SemestralnaPracaPOS.dir/Client.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /tmp/tmp.RolZ48t0LG/Client.c > CMakeFiles/SemestralnaPracaPOS.dir/Client.c.i
 
 CMakeFiles/SemestralnaPracaPOS.dir/Client.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/SemestralnaPracaPOS.dir/Client.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /tmp/tmp.vsWNUjhacs/Client.c -o CMakeFiles/SemestralnaPracaPOS.dir/Client.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /tmp/tmp.RolZ48t0LG/Client.c -o CMakeFiles/SemestralnaPracaPOS.dir/Client.c.s
 
 CMakeFiles/SemestralnaPracaPOS.dir/functions.c.o: CMakeFiles/SemestralnaPracaPOS.dir/flags.make
 CMakeFiles/SemestralnaPracaPOS.dir/functions.c.o: ../functions.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/tmp/tmp.vsWNUjhacs/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/SemestralnaPracaPOS.dir/functions.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/SemestralnaPracaPOS.dir/functions.c.o -c /tmp/tmp.vsWNUjhacs/functions.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/tmp/tmp.RolZ48t0LG/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/SemestralnaPracaPOS.dir/functions.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/SemestralnaPracaPOS.dir/functions.c.o -c /tmp/tmp.RolZ48t0LG/functions.c
 
 CMakeFiles/SemestralnaPracaPOS.dir/functions.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/SemestralnaPracaPOS.dir/functions.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /tmp/tmp.vsWNUjhacs/functions.c > CMakeFiles/SemestralnaPracaPOS.dir/functions.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /tmp/tmp.RolZ48t0LG/functions.c > CMakeFiles/SemestralnaPracaPOS.dir/functions.c.i
 
 CMakeFiles/SemestralnaPracaPOS.dir/functions.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/SemestralnaPracaPOS.dir/functions.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /tmp/tmp.vsWNUjhacs/functions.c -o CMakeFiles/SemestralnaPracaPOS.dir/functions.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /tmp/tmp.RolZ48t0LG/functions.c -o CMakeFiles/SemestralnaPracaPOS.dir/functions.c.s
 
 CMakeFiles/SemestralnaPracaPOS.dir/conn.c.o: CMakeFiles/SemestralnaPracaPOS.dir/flags.make
 CMakeFiles/SemestralnaPracaPOS.dir/conn.c.o: ../conn.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/tmp/tmp.vsWNUjhacs/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/SemestralnaPracaPOS.dir/conn.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/SemestralnaPracaPOS.dir/conn.c.o -c /tmp/tmp.vsWNUjhacs/conn.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/tmp/tmp.RolZ48t0LG/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/SemestralnaPracaPOS.dir/conn.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/SemestralnaPracaPOS.dir/conn.c.o -c /tmp/tmp.RolZ48t0LG/conn.c
 
 CMakeFiles/SemestralnaPracaPOS.dir/conn.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/SemestralnaPracaPOS.dir/conn.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /tmp/tmp.vsWNUjhacs/conn.c > CMakeFiles/SemestralnaPracaPOS.dir/conn.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /tmp/tmp.RolZ48t0LG/conn.c > CMakeFiles/SemestralnaPracaPOS.dir/conn.c.i
 
 CMakeFiles/SemestralnaPracaPOS.dir/conn.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/SemestralnaPracaPOS.dir/conn.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /tmp/tmp.vsWNUjhacs/conn.c -o CMakeFiles/SemestralnaPracaPOS.dir/conn.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /tmp/tmp.RolZ48t0LG/conn.c -o CMakeFiles/SemestralnaPracaPOS.dir/conn.c.s
 
 CMakeFiles/SemestralnaPracaPOS.dir/download.c.o: CMakeFiles/SemestralnaPracaPOS.dir/flags.make
 CMakeFiles/SemestralnaPracaPOS.dir/download.c.o: ../download.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/tmp/tmp.vsWNUjhacs/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/SemestralnaPracaPOS.dir/download.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/SemestralnaPracaPOS.dir/download.c.o -c /tmp/tmp.vsWNUjhacs/download.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/tmp/tmp.RolZ48t0LG/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/SemestralnaPracaPOS.dir/download.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/SemestralnaPracaPOS.dir/download.c.o -c /tmp/tmp.RolZ48t0LG/download.c
 
 CMakeFiles/SemestralnaPracaPOS.dir/download.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/SemestralnaPracaPOS.dir/download.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /tmp/tmp.vsWNUjhacs/download.c > CMakeFiles/SemestralnaPracaPOS.dir/download.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /tmp/tmp.RolZ48t0LG/download.c > CMakeFiles/SemestralnaPracaPOS.dir/download.c.i
 
 CMakeFiles/SemestralnaPracaPOS.dir/download.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/SemestralnaPracaPOS.dir/download.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /tmp/tmp.vsWNUjhacs/download.c -o CMakeFiles/SemestralnaPracaPOS.dir/download.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /tmp/tmp.RolZ48t0LG/download.c -o CMakeFiles/SemestralnaPracaPOS.dir/download.c.s
 
 # Object files for target SemestralnaPracaPOS
 SemestralnaPracaPOS_OBJECTS = \
@@ -144,7 +144,7 @@ SemestralnaPracaPOS: CMakeFiles/SemestralnaPracaPOS.dir/conn.c.o
 SemestralnaPracaPOS: CMakeFiles/SemestralnaPracaPOS.dir/download.c.o
 SemestralnaPracaPOS: CMakeFiles/SemestralnaPracaPOS.dir/build.make
 SemestralnaPracaPOS: CMakeFiles/SemestralnaPracaPOS.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/tmp/tmp.vsWNUjhacs/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking C executable SemestralnaPracaPOS"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/tmp/tmp.RolZ48t0LG/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking C executable SemestralnaPracaPOS"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/SemestralnaPracaPOS.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -157,6 +157,6 @@ CMakeFiles/SemestralnaPracaPOS.dir/clean:
 .PHONY : CMakeFiles/SemestralnaPracaPOS.dir/clean
 
 CMakeFiles/SemestralnaPracaPOS.dir/depend:
-	cd /tmp/tmp.vsWNUjhacs/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /tmp/tmp.vsWNUjhacs /tmp/tmp.vsWNUjhacs /tmp/tmp.vsWNUjhacs/cmake-build-debug /tmp/tmp.vsWNUjhacs/cmake-build-debug /tmp/tmp.vsWNUjhacs/cmake-build-debug/CMakeFiles/SemestralnaPracaPOS.dir/DependInfo.cmake --color=$(COLOR)
+	cd /tmp/tmp.RolZ48t0LG/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /tmp/tmp.RolZ48t0LG /tmp/tmp.RolZ48t0LG /tmp/tmp.RolZ48t0LG/cmake-build-debug /tmp/tmp.RolZ48t0LG/cmake-build-debug /tmp/tmp.RolZ48t0LG/cmake-build-debug/CMakeFiles/SemestralnaPracaPOS.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/SemestralnaPracaPOS.dir/depend
 

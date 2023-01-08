@@ -6,5 +6,6 @@
 #include "functions.h"
 
 int serverConnection(URL_SLICED* slicedURL);
+int connectServ(URL_SLICED* slicedURL);
 
 #endif //SEMESTRALNAPRACAPOS_CONN_H
